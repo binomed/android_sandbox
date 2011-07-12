@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 
 public class FirstSingleActivity extends FragmentActivity implements FragmentA.OnBtnClick {
 	/** Called when the activity is first created. */
@@ -11,7 +12,7 @@ public class FirstSingleActivity extends FragmentActivity implements FragmentA.O
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.empty);
-
+		Log.i("SingleActivity", "onCreate");
 		Fragment fragment = new FragmentA();
 
 		getSupportFragmentManager().beginTransaction().add(R.id.root_container, fragment).commit();
