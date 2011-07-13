@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    >
+    <ImageButton 
+	    android:id="@+id/btnExpand"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:src="@android:drawable/ic_media_ff"
+    />
+	<LinearLayout
+	    android:orientation="horizontal"
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent"
+	    >
+    <!--  <LinearLayout 
+	    android:id="@+id/layoutLeft" 
+	    android:orientation="vertical"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    >-->
+	    <fragment class="com.binomed.animation.FragmentList"
+	            android:id="@+id/fragmentList" 
+	            android:layout_width="0dp"
+	            android:layout_height="fill_parent" 
+	            android:layout_weight="25"
+	            />
+    <!-- </LinearLayout>-->
+    <!-- <LinearLayout 
+	    android:id="@+id/layoutRight" 
+	    android:orientation="vertical"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    >-->
+	    <fragment class="com.binomed.animation.FragmentEditText"
+	            android:id="@+id/fragmentText" 
+	            android:layout_width="0dp"
+	            android:layout_height="fill_parent" 
+	            android:layout_weight="75"
+	            />
+    <!-- </LinearLayout>-->
+    </LinearLayout>
+</LinearLayout>

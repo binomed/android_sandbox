@@ -4,41 +4,16 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     >
-    <ImageButton 
-	    android:id="@+id/btnExpand"
+    <Button 
+	    android:id="@+id/basic_animation"
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"
-	    android:src="@android:drawable/ic_media_ff"
+	    android:text="Animation basique"
     />
-    <LinearLayout 
-	    android:orientation="horizontal"
-	    android:layout_width="fill_parent"
-	    android:layout_height="fill_parent"
-    >
-	    <LinearLayout 
-	    	android:id="@+id/layoutLeft"
-		    android:orientation="vertical"
-		    android:layout_width="wrap_content"
-		    android:layout_height="fill_parent"
-		    android:gravity="right"
-	    >
-	    	<ListView
-	    	android:id="@+id/listView"
-		    android:layout_width="100dip"
-		    android:layout_height="fill_parent"
-	    	/>
-	    </LinearLayout>
-	    <LinearLayout 
-	    	android:id="@+id/layoutRight"
-		    android:orientation="vertical"
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
-		    android:gravity="right"
-	    >
-	    	<EditText 
-		    android:layout_width="150dip"
-		    android:layout_height="150dip"
-	    	/>
-	    </LinearLayout>
+    <Button 
+	    android:id="@+id/fragment_animation"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:text="Animation avec Fragment"
+    />
     </LinearLayout>
-</LinearLayout>
