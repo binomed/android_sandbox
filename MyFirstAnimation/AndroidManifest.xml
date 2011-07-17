@@ -15,6 +15,7 @@
         </activity>
         <activity android:name=".BasicAnimationActivity"/>
         <activity android:name=".FragmentAnimationActivity"/>
+        <activity android:name=".FragmentAnimationRelativActivity"/>
 
     </application>
 </manifest>

@@ -29,4 +29,12 @@ public class FragmentList extends Fragment {
 		list.setAdapter(adapter);
 	}
 
+	public void setOnFocusListener(View.OnFocusChangeListener focusListener) {
+		list.setOnFocusChangeListener(focusListener);
+	}
+
+	public void requestFocus() {
+		list.requestFocus();
+	}
+
 }

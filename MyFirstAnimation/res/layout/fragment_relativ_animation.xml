@@ -10,22 +10,33 @@
 	    android:layout_height="wrap_content"
 	    android:src="@android:drawable/ic_media_ff"
     />
-	<LinearLayout
-	    android:orientation="horizontal"
+	<!-- <LinearLayout
+    	android:orientation="horizontal"	
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent"
+	    android:weightSum="1.0"
+	    >-->
+	<FrameLayout
+	    android:id="@+id/frameLayout" 
 	    android:layout_width="fill_parent"
 	    android:layout_height="fill_parent"
 	    >
        <fragment class="com.binomed.animation.FragmentList"
 	            android:id="@+id/fragmentList" 
-	            android:layout_width="0dp"
-	            android:layout_height="fill_parent" 
-	            android:layout_weight="25"
-	            />
+	            android:layout_width="70dip"
+	            android:layout_height="fill_parent"
+	            android:layout_alignParentLeft="true"
+	            >
+          <!-- Preview: layout=@layout/fragment_list -->
+      </fragment>
       <fragment class="com.binomed.animation.FragmentEditText"
 	            android:id="@+id/fragmentText" 
-	            android:layout_width="0dp"
+	            android:layout_width="150dip"
 	            android:layout_height="fill_parent" 
-	            android:layout_weight="75"
-	            />
-   </LinearLayout>
+	            android:layout_marginLeft="70dip"
+	            >
+          <!-- Preview: layout=@layout/fragment_edit_text -->
+      </fragment>
+   <!-- </LinearLayout>-->
+   </FrameLayout>
 </LinearLayout>
