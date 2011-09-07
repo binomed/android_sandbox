@@ -33,7 +33,7 @@ public class SplashExample extends BaseSplashActivity {
 
 	@Override
 	protected Class<? extends Activity> getFollowUpActivity() {
-		return AndEngineSandBoxActivity.class;
+		return MonActiviteInteraction.class;
 	}
 
 	@Override
