@@ -2,10 +2,10 @@ package com.binomed.andengine;
 
 import org.anddev.andengine.engine.Engine;
 import org.anddev.andengine.engine.camera.Camera;
-import org.anddev.andengine.engine.handler.physics.PhysicsHandler;
 import org.anddev.andengine.engine.options.EngineOptions;
 import org.anddev.andengine.engine.options.EngineOptions.ScreenOrientation;
 import org.anddev.andengine.engine.options.resolutionpolicy.RatioResolutionPolicy;
+import org.anddev.andengine.entity.modifier.MoveModifier;
 import org.anddev.andengine.entity.scene.Scene;
 import org.anddev.andengine.entity.scene.Scene.IOnSceneTouchListener;
 import org.anddev.andengine.entity.sprite.AnimatedSprite;
@@ -13,10 +13,10 @@ import org.anddev.andengine.input.touch.TouchEvent;
 import org.anddev.andengine.input.touch.detector.ScrollDetector;
 import org.anddev.andengine.input.touch.detector.ScrollDetector.IScrollDetectorListener;
 import org.anddev.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
-import org.anddev.andengine.opengl.texture.region.TiledTextureRegion;
 import org.anddev.andengine.ui.activity.BaseGameActivity;
+import org.anddev.andengine.util.modifier.ease.EaseLinear;
 
-public class MonActiviteInteraction extends BaseGameActivity implements IScrollDetectorListener, IOnSceneTouchListener {
+public class MonActiviteInteraction extends BaseGameActivity implements IScrollDetectorListener, IOnSceneTouchListener,MovePeg {
 
 	// ===========================================================
 	// Constants
@@ -57,7 +57,7 @@ public class MonActiviteInteraction extends BaseGameActivity implements IScrollD
 	public Engine onLoadEngine() {
 
 		camera = new Camera(0, 0, CAMERA_LARGEUR, CAMERA_HAUTEUR);
-		maScene = new SceneInteraction();
+		maScene = new SceneInteraction(this);
 		return new Engine(new EngineOptions(true //
 				, ScreenOrientation.PORTRAIT //
 				, new RatioResolutionPolicy(CAMERA_LARGEUR, CAMERA_HAUTEUR) //
@@ -81,7 +81,6 @@ public class MonActiviteInteraction extends BaseGameActivity implements IScrollD
 	@Override
 	public void onLoadComplete() {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -98,34 +97,32 @@ public class MonActiviteInteraction extends BaseGameActivity implements IScrollD
 	// Methods
 	// ===========================================================
 
+	public void animatePeg(final AnimatedSprite sprite, final float x, final float y){
+		this.runOnUpdateThread(new Runnable() {
+			
+			@Override
+			public void run() {
+				sprite.clearEntityModifiers();
+//				final float y = sprite.getY();
+//                sprite.setPosition(x, y);
+                sprite.registerEntityModifier(new MoveModifier(1 // time
+                		, sprite.getX(), x //x soucre x to
+                		, sprite.getY(), y // y source y to
+                		, EaseLinear.getInstance()//
+                         ));
+                
+//                sprite.setPosition(0, y);
+//                sprite.registerEntityModifier(new MoveModifier(3, 0,
+//                                CAMERA_LARGEUR - sprite.getWidth(), y, y,
+//                                EaseLinear.getInstance()));
+				
+			}
+		});
+	}
+	
 	// ===========================================================
 	// Inner and Anonymous Classes
 	// ===========================================================
 
-	private static class Ball extends AnimatedSprite {
-		private final PhysicsHandler mPhysicsHandler;
-
-		public Ball(final float pX, final float pY, final TiledTextureRegion pTextureRegion) {
-			super(pX, pY, pTextureRegion);
-			this.mPhysicsHandler = new PhysicsHandler(this);
-			this.registerUpdateHandler(this.mPhysicsHandler);
-		}
-
-		@Override
-		protected void onManagedUpdate(final float pSecondsElapsed) {
-			if (this.mX < 0) {
-				this.mPhysicsHandler.setVelocityX(DEMO_VELOCITY);
-			} else if (this.mX + this.getWidth() > CAMERA_LARGEUR) {
-				this.mPhysicsHandler.setVelocityX(-DEMO_VELOCITY);
-			}
-
-			if (this.mY < 0) {
-				this.mPhysicsHandler.setVelocityY(DEMO_VELOCITY);
-			} else if (this.mY + this.getHeight() > CAMERA_HAUTEUR) {
-				this.mPhysicsHandler.setVelocityY(-DEMO_VELOCITY);
-			}
-
-			super.onManagedUpdate(pSecondsElapsed);
-		}
-	}
+	
 }

@@ -6,6 +6,7 @@ import org.anddev.andengine.engine.handler.physics.PhysicsHandler;
 import org.anddev.andengine.engine.options.EngineOptions;
 import org.anddev.andengine.engine.options.EngineOptions.ScreenOrientation;
 import org.anddev.andengine.engine.options.resolutionpolicy.RatioResolutionPolicy;
+import org.anddev.andengine.entity.modifier.MoveModifier;
 import org.anddev.andengine.entity.primitive.Line;
 import org.anddev.andengine.entity.primitive.Rectangle;
 import org.anddev.andengine.entity.scene.Scene;
@@ -25,6 +26,7 @@ import org.anddev.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextur
 import org.anddev.andengine.opengl.texture.region.TextureRegion;
 import org.anddev.andengine.opengl.texture.region.TiledTextureRegion;
 import org.anddev.andengine.ui.activity.BaseGameActivity;
+import org.anddev.andengine.util.modifier.ease.EaseLinear;
 
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -46,11 +48,12 @@ public class MonJeuActivite extends BaseGameActivity implements IScrollDetectorL
 	// ===========================================================
 
 	private Camera camera;
-	private TextureRegion regionImage;
+	private TextureRegion regionImage, personnage2;
 	private Font font, fontPerso;
 	private ChangeableText changeableText;
-	private BitmapTextureAtlas textureSoldier, texturePersonnage;
+	private BitmapTextureAtlas textureSoldier, texturePersonnage, texturePersonnage2;
 	private TiledTextureRegion soldier, personnage;
+	private Sprite sprite2;
 
 	// private ZoomCamera mCamera;
 	// private BitmapTextureAtlas mTexture;
@@ -130,10 +133,13 @@ public class MonJeuActivite extends BaseGameActivity implements IScrollDetectorL
 		soldier = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(textureSoldier, this, "soldier.png", 0, 0, 8, 1);
 
 		texturePersonnage = new BitmapTextureAtlas(512, 64);
+		texturePersonnage2 = new BitmapTextureAtlas(512, 64);
 		personnage = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(texturePersonnage, this, "personnage.png", 0, 0, 1, 1);
+		personnage2 = BitmapTextureAtlasTextureRegionFactory.createFromAsset(texturePersonnage2, this, "personnage.png", 0, 0);
 
 		this.mEngine.getTextureManager().loadTexture(textureSoldier);
 		this.mEngine.getTextureManager().loadTexture(texturePersonnage);
+		this.mEngine.getTextureManager().loadTexture(texturePersonnage2);
 
 	}
 
@@ -183,6 +189,9 @@ public class MonJeuActivite extends BaseGameActivity implements IScrollDetectorL
 		physicsHandler.setVelocity(DEMO_VELOCITY, DEMO_VELOCITY);
 
 		scene.attachChild(ball);
+		
+		sprite2 = new Sprite(50, 50, personnage2);
+		scene.attachChild(sprite2);
 
 		return scene;
 	}
@@ -190,7 +199,20 @@ public class MonJeuActivite extends BaseGameActivity implements IScrollDetectorL
 	@Override
 	public void onLoadComplete() {
 		// TODO Auto-generated method stub
+		 this.runOnUpdateThread(new Runnable() {
+             @Override
+             public void run() {
 
+                             final Sprite face = sprite2;
+                             face.clearEntityModifiers();
+
+                             final float y = face.getY();
+                             face.setPosition(0, y);
+                             face.registerEntityModifier(new MoveModifier(3, 0,
+                                             CAMERA_LARGEUR - face.getWidth(), y, y,
+                                             EaseLinear.getInstance()));
+             }
+     });
 	}
 
 	@Override

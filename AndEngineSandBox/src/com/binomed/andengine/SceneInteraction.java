@@ -16,13 +16,15 @@ import android.content.Context;
 
 public class SceneInteraction extends Scene {
 
-	private BitmapTextureAtlas textureTrou, texturePersoAnimated, texturePerso;
-	private TextureRegion textureRegionTrou, textureRegionPerso;
+	private BitmapTextureAtlas textureTrou, textureTrouLight, texturePersoAnimated, texturePerso;
+	private TextureRegion textureRegionTrou,textureRegionTrouLight, textureRegionPerso;
 	private TiledTextureRegion textureRegionPersoAnimated;
 	private Peg peg;
 	private PhysicsHandler physicsHandler;
 	private Rectangle rectangle;
-	private Sprite holeSprite;
+	private Sprite holeSprite, holeLightSprite;
+	
+	private MovePeg callBack;
 	private IUpdateHandler updateHandler = new IUpdateHandler() {
 
 		@Override
@@ -33,25 +35,31 @@ public class SceneInteraction extends Scene {
 
 		@Override
 		public void onUpdate(float pSecondsElapsed) {
-			if (rectangle.collidesWith(peg)) {
+			boolean rectangleTouch = rectangle.collidesWith(peg);
+			boolean holeTouch = holeSprite.collidesWith(peg);
+			if (rectangleTouch) {
 				float pRed = 0.5f;
 				float pGreen = 0.5f;
 				float pBlue = 0.5f;
 				float pAlpha = 1.0f;
 				rectangle.setColor(pRed, pGreen, pBlue, pAlpha);
+				holeLightSprite.setVisible(false);
 			} else {
 				float pRed = 0.0f;
 				float pGreen = 0.5f;
 				float pBlue = 0.5f;
 				float pAlpha = 1.0f;
 				rectangle.setColor(pRed, pGreen, pBlue, pAlpha);
+				holeLightSprite.setVisible(true);
 			}
+
 
 		}
 	};
 
-	public SceneInteraction() {
+	public SceneInteraction(MovePeg callBack) {
 		super();
+		this.callBack = callBack;
 		setBackground(new ColorBackground(0.52f, 0.75f, 0.03f));
 	}
 
@@ -59,13 +67,16 @@ public class SceneInteraction extends Scene {
 		texturePersoAnimated = new BitmapTextureAtlas(512, 64);
 		texturePerso = new BitmapTextureAtlas(512, 64);
 		textureTrou = new BitmapTextureAtlas(128, 128);
+		textureTrouLight = new BitmapTextureAtlas(128, 128);
 		textureRegionPersoAnimated = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(texturePersoAnimated, context, "soldier.png", 0, 0, 8, 1);
 		textureRegionPerso = BitmapTextureAtlasTextureRegionFactory.createFromAsset(texturePerso, context, "soldier.png", 64, 0);
 		textureRegionTrou = BitmapTextureAtlasTextureRegionFactory.createFromAsset(textureTrou, context, "blackhole.png", 0, 0);
+		textureRegionTrouLight = BitmapTextureAtlasTextureRegionFactory.createFromAsset(textureTrouLight, context, "blackhole_light.png", 0, 0);
 
 		engine.getTextureManager().loadTexture(texturePersoAnimated);
 		engine.getTextureManager().loadTexture(texturePerso);
 		engine.getTextureManager().loadTexture(textureTrou);
+		engine.getTextureManager().loadTexture(textureTrouLight);
 
 		init();
 
@@ -86,9 +97,12 @@ public class SceneInteraction extends Scene {
 		// Chargement d'une image
 		holeSprite = new Sprite(50, 50, textureRegionTrou);
 		attachChild(holeSprite);
+		holeLightSprite = new Sprite(50, 50, textureRegionTrouLight);
+		attachChild(holeLightSprite);
+		holeLightSprite.setVisible(false);
 
 		// Initialisation de notre tank
-		peg = new Peg(0, 0, textureRegionPersoAnimated);
+		peg = new Peg(MonActiviteInteraction.CAMERA_LARGEUR / 2, MonActiviteInteraction.CAMERA_HAUTEUR - 50, textureRegionPersoAnimated,callBack);
 		// Redimensionne notre tank
 		// peg.setScale(0.5f);
 		final PhysicsHandler physicsHandler = new PhysicsHandler(peg);
