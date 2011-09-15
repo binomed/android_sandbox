@@ -16,7 +16,8 @@ import org.anddev.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextur
 import org.anddev.andengine.ui.activity.BaseGameActivity;
 import org.anddev.andengine.util.modifier.ease.EaseLinear;
 
-public class MonActiviteInteraction extends BaseGameActivity implements IScrollDetectorListener, IOnSceneTouchListener,MovePeg {
+public class MonActiviteInteraction extends BaseGameActivity implements
+		IScrollDetectorListener, IOnSceneTouchListener, MovePeg {
 
 	// ===========================================================
 	// Constants
@@ -89,7 +90,8 @@ public class MonActiviteInteraction extends BaseGameActivity implements IScrollD
 	}
 
 	@Override
-	public void onScroll(ScrollDetector pScollDetector, TouchEvent pTouchEvent, float pDistanceX, float pDistanceY) {
+	public void onScroll(ScrollDetector pScollDetector, TouchEvent pTouchEvent,
+			float pDistanceX, float pDistanceY) {
 		// this.mCamera.offsetCenter(-pDistanceX, -pDistanceY);
 	}
 
@@ -97,32 +99,48 @@ public class MonActiviteInteraction extends BaseGameActivity implements IScrollD
 	// Methods
 	// ===========================================================
 
-	public void animatePeg(final AnimatedSprite sprite, final float x, final float y){
+	public void animatePeg(final AnimatedSprite sprite, final float x,
+			final float y) {
 		this.runOnUpdateThread(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				sprite.clearEntityModifiers();
-//				final float y = sprite.getY();
-//                sprite.setPosition(x, y);
-                sprite.registerEntityModifier(new MoveModifier(1 // time
-                		, sprite.getX(), x //x soucre x to
-                		, sprite.getY(), y // y source y to
-                		, EaseLinear.getInstance()//
-                         ));
-                
-//                sprite.setPosition(0, y);
-//                sprite.registerEntityModifier(new MoveModifier(3, 0,
-//                                CAMERA_LARGEUR - sprite.getWidth(), y, y,
-//                                EaseLinear.getInstance()));
-				
+				// final float y = sprite.getY();
+				// sprite.setPosition(x, y);
+				sprite.registerEntityModifier(new MoveModifier(0.50f // time
+						, sprite.getX(), x // x soucre x to
+						, sprite.getY(), y // y source y to
+						, EaseLinear.getInstance()//
+				));
+				sprite.animate(50, false);
+
+				// sprite.setPosition(0, y);
+				// sprite.registerEntityModifier(new MoveModifier(3, 0,
+				// CAMERA_LARGEUR - sprite.getWidth(), y, y,
+				// EaseLinear.getInstance()));
+
 			}
 		});
 	}
-	
+
+	@Override
+	public void pegMove(AnimatedSprite sprite) {
+		if (maScene.getPersoTmp() != null) {
+			this.runOnUpdateThread(new Runnable() {
+
+				@Override
+				public void run() {
+					maScene.removePegTmp();
+
+				}
+			});
+		}
+
+	}
+
 	// ===========================================================
 	// Inner and Anonymous Classes
 	// ===========================================================
 
-	
 }

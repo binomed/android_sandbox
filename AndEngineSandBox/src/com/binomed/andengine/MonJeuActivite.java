@@ -31,7 +31,8 @@ import org.anddev.andengine.util.modifier.ease.EaseLinear;
 import android.graphics.Color;
 import android.graphics.Typeface;
 
-public class MonJeuActivite extends BaseGameActivity implements IScrollDetectorListener, IOnSceneTouchListener {
+public class MonJeuActivite extends BaseGameActivity implements
+		IScrollDetectorListener, IOnSceneTouchListener {
 
 	// ===========================================================
 	// Constants
@@ -51,7 +52,8 @@ public class MonJeuActivite extends BaseGameActivity implements IScrollDetectorL
 	private TextureRegion regionImage, personnage2;
 	private Font font, fontPerso;
 	private ChangeableText changeableText;
-	private BitmapTextureAtlas textureSoldier, texturePersonnage, texturePersonnage2;
+	private BitmapTextureAtlas textureSoldier, texturePersonnage,
+			texturePersonnage2;
 	private TiledTextureRegion soldier, personnage;
 	private Sprite sprite2;
 
@@ -89,16 +91,19 @@ public class MonJeuActivite extends BaseGameActivity implements IScrollDetectorL
 	public void onLoadResources() {
 
 		// Chargement de l'image
-		final BitmapTextureAtlas mBitmapTextureAtlas = new BitmapTextureAtlas(64, 64, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+		final BitmapTextureAtlas mBitmapTextureAtlas = new BitmapTextureAtlas(
+				64, 64, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
-		regionImage = BitmapTextureAtlasTextureRegionFactory.createFromAsset(mBitmapTextureAtlas, this, "andengine.png", 0, 0);
+		regionImage = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
+				mBitmapTextureAtlas, this, "andengine.png", 0, 0);
 
 		// Prise en compte dans le moteur
 		this.mEngine.getTextureManager().loadTexture(mBitmapTextureAtlas);
 
 		// --
 		// Chargement du texte
-		final BitmapTextureAtlas fontTexture = new BitmapTextureAtlas(256, 256, TextureOptions.BILINEAR);
+		final BitmapTextureAtlas fontTexture = new BitmapTextureAtlas(256, 256,
+				TextureOptions.BILINEAR);
 
 		font = new Font(fontTexture, //
 				Typeface.create(Typeface.DEFAULT, Typeface.NORMAL), //
@@ -115,7 +120,8 @@ public class MonJeuActivite extends BaseGameActivity implements IScrollDetectorL
 		// Chargement d'une police custo
 		FontFactory.setAssetBasePath("font/");
 
-		final BitmapTextureAtlas fontPersoTexture = new BitmapTextureAtlas(256, 256, TextureOptions.BILINEAR);
+		final BitmapTextureAtlas fontPersoTexture = new BitmapTextureAtlas(256,
+				256, TextureOptions.BILINEAR);
 
 		fontPerso = FontFactory.createFromAsset(fontPersoTexture //
 				, this //
@@ -130,12 +136,16 @@ public class MonJeuActivite extends BaseGameActivity implements IScrollDetectorL
 
 		// Chargement d'une texture animée
 		textureSoldier = new BitmapTextureAtlas(512, 64);
-		soldier = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(textureSoldier, this, "soldier.png", 0, 0, 8, 1);
+		soldier = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(
+				textureSoldier, this, "soldier.png", 0, 0, 8, 1);
 
 		texturePersonnage = new BitmapTextureAtlas(512, 64);
 		texturePersonnage2 = new BitmapTextureAtlas(512, 64);
-		personnage = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(texturePersonnage, this, "personnage.png", 0, 0, 1, 1);
-		personnage2 = BitmapTextureAtlasTextureRegionFactory.createFromAsset(texturePersonnage2, this, "personnage.png", 0, 0);
+		personnage = BitmapTextureAtlasTextureRegionFactory
+				.createTiledFromAsset(texturePersonnage, this,
+						"personnage.png", 0, 0, 1, 1);
+		personnage2 = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
+				texturePersonnage2, this, "personnage.png", 0, 0);
 
 		this.mEngine.getTextureManager().loadTexture(textureSoldier);
 		this.mEngine.getTextureManager().loadTexture(texturePersonnage);
@@ -150,7 +160,8 @@ public class MonJeuActivite extends BaseGameActivity implements IScrollDetectorL
 		final Scene scene = new Scene();
 
 		// Chargement d'un rectangle
-		final Rectangle rectangle = new Rectangle(CAMERA_LARGEUR / 2, CAMERA_HAUTEUR / 2, 100, 50);
+		final Rectangle rectangle = new Rectangle(CAMERA_LARGEUR / 2,
+				CAMERA_HAUTEUR / 2, 100, 50);
 
 		float pRed = 0.0f;
 		float pGreen = 0.5f;
@@ -173,12 +184,14 @@ public class MonJeuActivite extends BaseGameActivity implements IScrollDetectorL
 		scene.attachChild(monTexte);
 
 		// Chargement d'un texte dynamique
-		changeableText = new ChangeableText(0, 150, fontPerso, "Coucou tout le monde");
+		changeableText = new ChangeableText(0, 150, fontPerso,
+				"Coucou tout le monde");
 		changeableText.setText("Et puis non ! ");
 		scene.attachChild(changeableText);
 
 		// Animation sprite
-		final AnimatedSprite animatedSprite = new AnimatedSprite(50, 100, soldier);
+		final AnimatedSprite animatedSprite = new AnimatedSprite(50, 100,
+				soldier);
 		animatedSprite.animate(25, true);
 
 		scene.attachChild(animatedSprite);
@@ -189,9 +202,11 @@ public class MonJeuActivite extends BaseGameActivity implements IScrollDetectorL
 		physicsHandler.setVelocity(DEMO_VELOCITY, DEMO_VELOCITY);
 
 		scene.attachChild(ball);
-		
+
 		sprite2 = new Sprite(50, 50, personnage2);
 		scene.attachChild(sprite2);
+
+		scene.setOnSceneTouchListener(this);
 
 		return scene;
 	}
@@ -199,30 +214,44 @@ public class MonJeuActivite extends BaseGameActivity implements IScrollDetectorL
 	@Override
 	public void onLoadComplete() {
 		// TODO Auto-generated method stub
-		 this.runOnUpdateThread(new Runnable() {
-             @Override
-             public void run() {
+		this.runOnUpdateThread(new Runnable() {
+			@Override
+			public void run() {
 
-                             final Sprite face = sprite2;
-                             face.clearEntityModifiers();
+				final Sprite face = sprite2;
+				face.clearEntityModifiers();
 
-                             final float y = face.getY();
-                             face.setPosition(0, y);
-                             face.registerEntityModifier(new MoveModifier(3, 0,
-                                             CAMERA_LARGEUR - face.getWidth(), y, y,
-                                             EaseLinear.getInstance()));
-             }
-     });
+				final float y = face.getY();
+				face.setPosition(0, y);
+				face.registerEntityModifier(new MoveModifier(3, 0,
+						CAMERA_LARGEUR - face.getWidth(), y, y, EaseLinear
+								.getInstance()));
+			}
+		});
 	}
 
 	@Override
-	public boolean onSceneTouchEvent(Scene pScene, TouchEvent pSceneTouchEvent) {
+	public boolean onSceneTouchEvent(final Scene pScene,
+			TouchEvent pSceneTouchEvent) {
 		// this.mScrollDetector.onTouchEvent(pSceneTouchEvent);
+
+		// if (pSceneTouchEvent.getX() == sprite2.getX()
+		// && pSceneTouchEvent.getY() == sprite2.getY()) {
+		this.runOnUpdateThread(new Runnable() {
+
+			@Override
+			public void run() {
+				pScene.detachChild(sprite2);
+
+			}
+		});
+		// }
 		return true;
 	}
 
 	@Override
-	public void onScroll(ScrollDetector pScollDetector, TouchEvent pTouchEvent, float pDistanceX, float pDistanceY) {
+	public void onScroll(ScrollDetector pScollDetector, TouchEvent pTouchEvent,
+			float pDistanceX, float pDistanceY) {
 		// this.mCamera.offsetCenter(-pDistanceX, -pDistanceY);
 	}
 
@@ -237,7 +266,8 @@ public class MonJeuActivite extends BaseGameActivity implements IScrollDetectorL
 	private static class Ball extends AnimatedSprite {
 		private final PhysicsHandler mPhysicsHandler;
 
-		public Ball(final float pX, final float pY, final TiledTextureRegion pTextureRegion) {
+		public Ball(final float pX, final float pY,
+				final TiledTextureRegion pTextureRegion) {
 			super(pX, pY, pTextureRegion);
 			this.mPhysicsHandler = new PhysicsHandler(this);
 			this.registerUpdateHandler(this.mPhysicsHandler);
