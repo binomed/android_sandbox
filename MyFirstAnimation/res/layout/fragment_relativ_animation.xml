@@ -16,7 +16,7 @@
 	    android:layout_height="fill_parent"
 	    android:weightSum="1.0"
 	    >-->
-	<FrameLayout
+	<RelativeLayout
 	    android:id="@+id/frameLayout" 
 	    android:layout_width="fill_parent"
 	    android:layout_height="fill_parent"
@@ -38,5 +38,5 @@
           <!-- Preview: layout=@layout/fragment_edit_text -->
       </fragment>
    <!-- </LinearLayout>-->
-   </FrameLayout>
+   </RelativeLayout>
 </LinearLayout>

@@ -4,13 +4,12 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.TranslateAnimation;
 import android.widget.BaseAdapter;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class FragmentAnimationRelativActivity extends FragmentActivity {
@@ -21,18 +20,18 @@ public class FragmentAnimationRelativActivity extends FragmentActivity {
 
 	private int dist = 200;
 	private int delay = 500;
-	private int widthLeftFull, widthLeftLight;
+	private int widthLeftFull, widthLeftLight, widthRight;
 
 	private boolean hideRight;
 
 	private AdapaterFull adapaterFull;
 	private AdapaterLight adapaterLight;
 
-	private FrameLayout frameLayout = null;
+	private RelativeLayout frameLayout = null;
 	private FragmentEditText fragText = null;
 	private FragmentList fragList = null;
 
-	private FrameLayout.LayoutParams paramsLeft, paramsRight;
+	private RelativeLayout.LayoutParams paramsLeft, paramsRight;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -40,7 +39,7 @@ public class FragmentAnimationRelativActivity extends FragmentActivity {
 		setContentView(R.layout.fragment_relativ_animation);
 
 		btnExpand = (ImageButton) findViewById(R.id.btnExpand);
-		frameLayout = (FrameLayout) findViewById(R.id.frameLayout);
+		frameLayout = (RelativeLayout) findViewById(R.id.frameLayout);
 		fragText = (FragmentEditText) getSupportFragmentManager().findFragmentById(R.id.fragmentText);
 		fragList = (FragmentList) getSupportFragmentManager().findFragmentById(R.id.fragmentList);
 		hideRight = false;
@@ -54,14 +53,14 @@ public class FragmentAnimationRelativActivity extends FragmentActivity {
 
 			@Override
 			public void run() {
-				paramsLeft = (android.widget.FrameLayout.LayoutParams) fragList.getView().getLayoutParams();
-				paramsRight = (android.widget.FrameLayout.LayoutParams) fragText.getView().getLayoutParams();
+				paramsLeft = (android.widget.RelativeLayout.LayoutParams) fragList.getView().getLayoutParams();
+				paramsRight = (android.widget.RelativeLayout.LayoutParams) fragText.getView().getLayoutParams();
 
 				int totalWidth = frameLayout.getWidth();
 				widthLeftFull = Double.valueOf(totalWidth * 0.50).intValue();
 				widthLeftLight = Double.valueOf(totalWidth * 0.25).intValue();
 				dist = widthLeftFull - widthLeftLight;
-				int widthRight = Double.valueOf(totalWidth * 0.75).intValue();
+				widthRight = Double.valueOf(totalWidth * 0.75).intValue();
 				// widthLeft = 100;
 				// widthRight = 300;
 
@@ -69,10 +68,11 @@ public class FragmentAnimationRelativActivity extends FragmentActivity {
 				// paramsRight = new FrameLayout.LayoutParams(widthRight, android.widget.FrameLayout.LayoutParams.FILL_PARENT);
 				paramsLeft.width = widthLeftLight;
 				paramsRight.width = widthRight;
-				paramsRight.gravity = Gravity.RIGHT;
+				// paramsRight.addRule(RelativeLayout.ALIGN_RIGHT, arg1)gravity = Gravity.RIGHT;
 
 				fragList.getView().setLayoutParams(paramsLeft);
 				fragText.getView().setLayoutParams(paramsRight);
+				fragText.getView().setBackgroundColor(android.R.color.darker_gray);
 				frameLayout.setVisibility(View.VISIBLE);
 			}
 		}, delay + 200);
@@ -83,7 +83,7 @@ public class FragmentAnimationRelativActivity extends FragmentActivity {
 			public void onClick(View v) {
 				hideRight = !hideRight;
 				extendList();
-				fragList.requestFocus();
+				// fragList.requestFocus();
 
 			}
 		});
@@ -93,7 +93,7 @@ public class FragmentAnimationRelativActivity extends FragmentActivity {
 			public void onFocusChange(View arg0, boolean arg1) {
 				if (!arg1 && hideRight) {
 					hideRight = false;
-					extendList();
+					// extendList();
 				}
 			}
 		};
@@ -104,11 +104,14 @@ public class FragmentAnimationRelativActivity extends FragmentActivity {
 
 	private void extendList() {
 		if (hideRight) {
-			TranslateAnimation animation = new TranslateAnimation(fragText.getView().getLeft(), fragText.getView().getLeft() + dist, 0, 0);
+			// TranslateAnimation animation = new TranslateAnimation(fragText.getView().getLeft(), fragText.getView().getLeft() + dist, 0, 0);
+			TranslateAnimation animation = new TranslateAnimation(widthLeftLight, widthLeftFull, 0, 0);
 			animation = new TranslateAnimation(0, dist, 0, 0);
+			// animation = new TranslateAnimation(Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF, Float.valueOf(dist)//
+			// , Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF, 0.0f);
 			animation.setStartOffset(0);// layoutRight.getLeft());
 			animation.setDuration(delay);
-			animation.setFillAfter(true);
+			// animation.setFillAfter(true);
 			fragText.getView().startAnimation(animation);
 
 			fragList.changeAdapter(adapaterFull);
@@ -116,22 +119,52 @@ public class FragmentAnimationRelativActivity extends FragmentActivity {
 			paramsLeft.width = widthLeftFull;
 			fragList.getView().setLayoutParams(paramsLeft);
 
+			paramsRight.leftMargin = widthLeftFull;
+			// paramsRight.addRule(RelativeLayout.RIGHT_OF, R.id.fragmentList);
+			fragText.getView().setLayoutParams(paramsRight);
+			mHandler.postDelayed(new Runnable() {
+
+				@Override
+				public void run() {
+					// paramsRight.leftMargin = widthLeftFull;
+					// fragText.getView().setLayoutParams(paramsRight);
+					int height = frameLayout.getHeight();
+					fragText.getView().layout(widthLeftFull, 0, widthLeftFull + widthRight, height);
+				}
+			}, delay);
 			mHandler.postDelayed(new Runnable() {
 
 				@Override
 				public void run() {
 					btnExpand.setImageResource(android.R.drawable.ic_media_rew);
-					// fragText.getView().setLayoutParams(new LinearLayout.LayoutParams(witdth, LayoutParams.FILL_PARENT));
+
 				}
 			}, delay + 200);
 		} else {
-			TranslateAnimation animation = new TranslateAnimation(fragText.getView().getLeft() + dist, fragText.getView().getLeft(), 0, 0);
-			animation = new TranslateAnimation(dist, 0, 0, 0);
+			// TranslateAnimation animation = new TranslateAnimation(fragText.getView().getLeft() + dist, fragText.getView().getLeft(), 0, 0);
+			TranslateAnimation animation = new TranslateAnimation(widthLeftFull, widthLeftLight, 0, 0);
+			animation = new TranslateAnimation(0, -dist, 0, 0);
+			// animation = new TranslateAnimation(Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF, -Float.valueOf(dist)//
+			// , Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF, 0.0f);
 			animation.setStartOffset(0);// layoutRight.getLeft());
-			animation.setDuration(500);
-			animation.setFillAfter(true);
+			animation.setDuration(delay);
+			// animation.setFillAfter(true);
 			fragText.getView().startAnimation(animation);
 
+			paramsRight.leftMargin = widthLeftLight;
+			fragText.getView().setLayoutParams(paramsRight);
+			mHandler.postDelayed(new Runnable() {
+
+				@Override
+				public void run() {
+
+					int height = frameLayout.getHeight();
+					// paramsRight.addRule(RelativeLayout.RIGHT_OF, R.id.fragmentList);
+
+					fragText.getView().layout(widthLeftLight, 0, widthLeftLight + widthRight, height);
+
+				}
+			}, delay);
 			mHandler.postDelayed(new Runnable() {
 
 				@Override
@@ -140,6 +173,7 @@ public class FragmentAnimationRelativActivity extends FragmentActivity {
 					paramsLeft.width = widthLeftLight;
 					fragList.getView().setLayoutParams(paramsLeft);
 					fragList.changeAdapter(adapaterLight);
+
 				}
 			}, delay + 200);
 		}

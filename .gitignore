@@ -5,3 +5,6 @@
 /MyFirstAnimation/proguard.cfg
 /MyFirstFragment/bin/classes.dex
 /MyFirstFragment/gen/com/binomed/fragment/R.java
+/CustomView/bin/CustomView.apk
+/CustomView/proguard.cfg
+/CustomView/bin/resources.ap_
