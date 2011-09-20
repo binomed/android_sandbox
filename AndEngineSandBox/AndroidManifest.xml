@@ -14,7 +14,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="AndEngineSandBoxActivity"/>
+        <activity android:name=".MonJeuActivite"/>
+        <activity android:name=".MonActivite"/>
+        <activity android:name=".MonActiviteInteraction"/>
+        <activity android:name=".MonActiviteDansUneVue"/>
 
     </application>
 </manifest>

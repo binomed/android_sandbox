@@ -2,4 +2,8 @@
 <resources>
     <string name="hello">Hello World, AndEngineSandBoxActivity!</string>
     <string name="app_name">AndEngineSandBox</string>
+    <string name="tank">Tank</string>
+    <string name="tests">Tests</string>
+    <string name="peg">Peg</string>
+    <string name="pegbis">Peg une Vue</string>
 </resources>

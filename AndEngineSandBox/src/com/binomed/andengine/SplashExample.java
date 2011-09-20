@@ -1,44 +1,59 @@
 package com.binomed.andengine;
 
-import org.anddev.andengine.engine.options.EngineOptions.ScreenOrientation;
-import org.anddev.andengine.opengl.texture.atlas.bitmap.source.AssetBitmapTextureAtlasSource;
-import org.anddev.andengine.opengl.texture.atlas.bitmap.source.IBitmapTextureAtlasSource;
-import org.anddev.andengine.ui.activity.BaseSplashActivity;
-
 import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 
-public class SplashExample extends BaseSplashActivity {
-
-	// ===========================================================
-	// Constants
-	// ===========================================================
-
-	private static final int SPLASH_DURATION = 3;
-	private static final float SPLASH_SCALE_FROM = 1f;
+public class SplashExample extends Activity {
 
 	@Override
-	protected ScreenOrientation getScreenOrientation() {
-		return ScreenOrientation.LANDSCAPE;
-	}
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.main);
 
-	@Override
-	protected IBitmapTextureAtlasSource onGetSplashTextureAtlasSource() {
-		return new AssetBitmapTextureAtlasSource(this, "gfx/splash.png");
-	}
+		Button btnTank = (Button) findViewById(R.id.tank);
+		Button btnPeg = (Button) findViewById(R.id.peg);
+		Button btnPegBis = (Button) findViewById(R.id.pegbis);
+		Button btnTest = (Button) findViewById(R.id.tests);
 
-	@Override
-	protected float getSplashDuration() {
-		return SPLASH_DURATION;
-	}
+		btnTank.setOnClickListener(new View.OnClickListener() {
 
-	@Override
-	protected Class<? extends Activity> getFollowUpActivity() {
-		return AndEngineSandBoxActivity.class;
-	}
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(getBaseContext(), MonActivite.class);
+				startActivity(intent);
+			}
+		});
+		btnPeg.setOnClickListener(new View.OnClickListener() {
 
-	@Override
-	protected float getSplashScaleFrom() {
-		return SPLASH_SCALE_FROM;
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(getBaseContext(), MonActiviteInteraction.class);
+				startActivity(intent);
+
+			}
+		});
+		btnPegBis.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(getBaseContext(), MonActiviteDansUneVue.class);
+				startActivity(intent);
+
+			}
+		});
+		btnTest.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(getBaseContext(), MonJeuActivite.class);
+				startActivity(intent);
+
+			}
+		});
+
 	}
 
 }
