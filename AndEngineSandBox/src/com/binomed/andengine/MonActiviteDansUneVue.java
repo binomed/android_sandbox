@@ -1,5 +1,7 @@
 package com.binomed.andengine;
 
+import java.util.HashMap;
+
 import org.anddev.andengine.engine.Engine;
 import org.anddev.andengine.engine.camera.Camera;
 import org.anddev.andengine.engine.handler.IUpdateHandler;
@@ -25,7 +27,7 @@ import org.anddev.andengine.opengl.vertex.RectangleVertexBuffer;
 import org.anddev.andengine.ui.activity.BaseGameActivity;
 import org.anddev.andengine.util.modifier.ease.EaseLinear;
 
-public class MonActiviteDansUneVue extends BaseGameActivity implements IScrollDetectorListener, IOnSceneTouchListener, MovePeg {
+public class MonActiviteDansUneVue extends BaseGameActivity implements IScrollDetectorListener, IOnSceneTouchListener {
 
 	// ===========================================================
 	// Constants
@@ -50,10 +52,12 @@ public class MonActiviteDansUneVue extends BaseGameActivity implements IScrollDe
 	private Pion peg;
 	private PhysicsHandler physicsHandler;
 	private Rectangle rectangle;
-	private Sprite[] holeSprite, holeLightSprite;
-	private Sprite perso, persoTmp;
+	private StaticPion[] holeSprite, holeLightSprite;
+	private Sprite perso;// , persoTmp;
 	private boolean onRectangle;
 	private int currentHole = 0;
+	private HashMap<Long, StaticPion> mapPion = new HashMap<Long, MonActiviteDansUneVue.StaticPion>();
+	private HashMap<Long, StaticPion> mapHole = new HashMap<Long, MonActiviteDansUneVue.StaticPion>();
 
 	private IUpdateHandler updateHandler = new IUpdateHandler() {
 
@@ -91,7 +95,7 @@ public class MonActiviteDansUneVue extends BaseGameActivity implements IScrollDe
 				rectangle.setColor(pRed, pGreen, pBlue, pAlpha);
 				int i = 0;
 				for (Sprite hole : holeSprite) {
-					if (peg.getX() < (hole.getX() + hole.getWidth())) {
+					if (peg.isVisible() && peg.getX() < (hole.getX() + hole.getWidth())) {
 						holeLightSprite[currentHole].setVisible(false);
 						holeLightSprite[i].setVisible(true);
 						currentHole = i;
@@ -105,12 +109,19 @@ public class MonActiviteDansUneVue extends BaseGameActivity implements IScrollDe
 				peg.setVisible(false);
 			}
 			if (holeTouch) {
-				for (Sprite hole : holeSprite) {
+				for (StaticPion hole : holeSprite) {
 					if (hole.getX() == peg.getX() && hole.getY() == peg.getY()) {
 						peg.setVisible(false);
-						if (persoTmp == null) {
-							persoTmp = new Sprite(peg.getX(), peg.getY(), textureRegionPerso);
+						if (peg.getID_Pion() == -1 && hole.getID() == -1) {
+							StaticPion persoTmp = new StaticPion(peg.getX(), peg.getY(), textureRegionPerso);
+							persoTmp.setID(System.currentTimeMillis());
+							persoTmp.setSourcePeg(false);
+							peg.setID_Pion(persoTmp.getID());
+							hole.setID(persoTmp.getID());
+							mapPion.put(persoTmp.getID(), persoTmp);
+							mapHole.put(persoTmp.getID(), hole);
 							scene.attachChild(persoTmp);
+							scene.registerTouchArea(persoTmp);
 						}
 						break;
 					}
@@ -174,26 +185,26 @@ public class MonActiviteDansUneVue extends BaseGameActivity implements IScrollDe
 		scene.attachChild(rectangle);
 
 		// Chargement d'une image
-		holeSprite = new Sprite[2];
-		Sprite hole = new Sprite(50, 50, textureRegionTrou);
+		holeSprite = new StaticPion[2];
+		StaticPion hole = new StaticPion(50, 50, textureRegionTrou);
 		scene.attachChild(hole);
 		holeSprite[0] = hole;
-		hole = new Sprite(200, 50, textureRegionTrou);
+		hole = new StaticPion(200, 50, textureRegionTrou);
 		scene.attachChild(hole);
 		holeSprite[1] = hole;
 
-		holeLightSprite = new Sprite[2];
-		hole = new Sprite(50, 50, textureRegionTrouLight);
+		holeLightSprite = new StaticPion[2];
+		hole = new StaticPion(50, 50, textureRegionTrouLight);
 		scene.attachChild(hole);
 		hole.setVisible(false);
 		holeLightSprite[0] = hole;
-		hole = new Sprite(200, 50, textureRegionTrouLight);
+		hole = new StaticPion(200, 50, textureRegionTrouLight);
 		scene.attachChild(hole);
 		hole.setVisible(false);
 		holeLightSprite[1] = hole;
 
 		// Initialisation de notre tank
-		perso = new Sprite(MonActiviteInteraction.CAMERA_LARGEUR / 2, MonActiviteInteraction.CAMERA_HAUTEUR - 100, textureRegionPerso);
+		perso = new StaticPion(MonActiviteInteraction.CAMERA_LARGEUR / 2, MonActiviteInteraction.CAMERA_HAUTEUR - 100, textureRegionPerso);
 		scene.attachChild(perso);
 		peg = new Pion(MonActiviteInteraction.CAMERA_LARGEUR / 2, MonActiviteInteraction.CAMERA_HAUTEUR - 100, textureRegionPersoAnimated);
 		// Redimensionne notre tank
@@ -201,7 +212,8 @@ public class MonActiviteDansUneVue extends BaseGameActivity implements IScrollDe
 		final PhysicsHandler physicsHandler = new PhysicsHandler(peg);
 		peg.registerUpdateHandler(physicsHandler);
 		scene.attachChild(peg);
-		scene.registerTouchArea(peg);
+		// scene.registerTouchArea(peg);
+		scene.registerTouchArea(perso);
 		peg.setVisible(false);
 
 		scene.registerUpdateHandler(updateHandler);
@@ -228,15 +240,12 @@ public class MonActiviteDansUneVue extends BaseGameActivity implements IScrollDe
 	// Methods
 	// ===========================================================
 
-	@Override
 	public void animatePeg(final AnimatedSprite sprite, final float x, final float y) {
 		this.runOnUpdateThread(new Runnable() {
 
 			@Override
 			public void run() {
 				sprite.clearEntityModifiers();
-				// final float y = sprite.getY();
-				// sprite.setPosition(x, y);
 				sprite.registerEntityModifier(new MoveModifier(0.50f // time
 						, sprite.getX(), x // x soucre x to
 						, sprite.getY(), y // y source y to
@@ -244,31 +253,42 @@ public class MonActiviteDansUneVue extends BaseGameActivity implements IScrollDe
 				));
 				sprite.animate(50, false);
 
-				// sprite.setPosition(0, y);
-				// sprite.registerEntityModifier(new MoveModifier(3, 0,
-				// CAMERA_LARGEUR - sprite.getWidth(), y, y,
-				// EaseLinear.getInstance()));
-
 			}
 		});
 	}
 
-	@Override
-	public void pegMove(AnimatedSprite sprite) {
-		if (persoTmp != null) {
-			this.runOnUpdateThread(new Runnable() {
+	public void pegMove(final StaticPion sprite) {
 
-				@Override
-				public void run() {
-					if (persoTmp != null) {
-						scene.detachChild(persoTmp);
-						persoTmp = null;
-					}
+		this.runOnUpdateThread(new Runnable() {
 
+			@Override
+			public void run() {
+				if (mapPion.containsKey(sprite.getID())) {
+					peg.setID_Pion(-1l);
+					mapPion.remove(sprite.getID());
+					mapHole.get(sprite.getID()).setID(-1);
+					mapHole.remove(sprite.getID());
+					scene.unregisterTouchArea(sprite);
+					scene.detachChild(sprite);
 				}
-			});
-		}
+			}
+		});
 
+	}
+
+	public void delegateOnAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
+		if (pSceneTouchEvent.isActionDown() || pSceneTouchEvent.isActionMove()) {
+			peg.setID_Pion(-1);
+			peg.setVisible(true);
+			peg.setPosition(pSceneTouchEvent.getX() - peg.getWidth() / 2, (pSceneTouchEvent.getY() - peg.getHeight() / 2) - 50);
+		} else if (pSceneTouchEvent.isActionUp()) {
+			if (onRectangle) {
+				animatePeg(peg, MonActiviteInteraction.CAMERA_LARGEUR / 2, MonActiviteInteraction.CAMERA_HAUTEUR - 100);
+			} else {
+				animatePeg(peg, holeLightSprite[currentHole].getX(), holeLightSprite[currentHole].getY());
+
+			}
+		}
 	}
 
 	// ===========================================================
@@ -276,6 +296,16 @@ public class MonActiviteDansUneVue extends BaseGameActivity implements IScrollDe
 	// ===========================================================
 
 	class Pion extends AnimatedSprite {
+
+		private long ID_Pion = -1l;
+
+		public long getID_Pion() {
+			return ID_Pion;
+		}
+
+		public void setID_Pion(long iD_Pion) {
+			ID_Pion = iD_Pion;
+		}
 
 		public Pion(float pX, float pY, float pTileWidth, float pTileHeight, TiledTextureRegion pTiledTextureRegion, RectangleVertexBuffer pRectangleVertexBuffer) {
 			super(pX, pY, pTileWidth, pTileHeight, pTiledTextureRegion, pRectangleVertexBuffer);
@@ -295,23 +325,51 @@ public class MonActiviteDansUneVue extends BaseGameActivity implements IScrollDe
 
 		@Override
 		public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
-			if (pSceneTouchEvent.isActionDown()) {
-				setVisible(true);
-				this.setPosition(pSceneTouchEvent.getX() - this.getWidth() / 2, (pSceneTouchEvent.getY() - this.getHeight() / 2) - 50);
-				pegMove(this);
-			} else if (pSceneTouchEvent.isActionMove()) {
-				pegMove(this);
-				setVisible(true);
-				this.setPosition(pSceneTouchEvent.getX() - this.getWidth() / 2, (pSceneTouchEvent.getY() - this.getHeight() / 2) - 50);
-			} else if (pSceneTouchEvent.isActionUp()) {
-				if (onRectangle) {
-					animatePeg(this, MonActiviteInteraction.CAMERA_LARGEUR / 2, MonActiviteInteraction.CAMERA_HAUTEUR - 100);
-				} else {
+			delegateOnAreaTouched(pSceneTouchEvent, pTouchAreaLocalX, pTouchAreaLocalY);
+			return true;
+		}
 
-					animatePeg(this, holeLightSprite[currentHole].getX(), holeLightSprite[currentHole].getY());
+	}
 
-				}
+	class StaticPion extends Sprite {
+
+		private boolean sourcePeg = true;
+		private long ID = -1;
+
+		public void setSourcePeg(boolean sourcePeg) {
+			this.sourcePeg = sourcePeg;
+		}
+
+		public long getID() {
+			return ID;
+		}
+
+		public void setID(long iD) {
+			ID = iD;
+		}
+
+		public StaticPion(float pX, float pY, float pWidth, float pHeight, TextureRegion pTextureRegion, RectangleVertexBuffer pRectangleVertexBuffer) {
+			super(pX, pY, pWidth, pHeight, pTextureRegion, pRectangleVertexBuffer);
+		}
+
+		public StaticPion(float pX, float pY, float pWidth, float pHeight, TextureRegion pTextureRegion) {
+			super(pX, pY, pWidth, pHeight, pTextureRegion);
+		}
+
+		public StaticPion(float pX, float pY, TextureRegion pTextureRegion, RectangleVertexBuffer pRectangleVertexBuffer) {
+			super(pX, pY, pTextureRegion, pRectangleVertexBuffer);
+		}
+
+		public StaticPion(float pX, float pY, TextureRegion pTextureRegion) {
+			super(pX, pY, pTextureRegion);
+		}
+
+		@Override
+		public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
+			if (pSceneTouchEvent.isActionDown() && !sourcePeg) {
+				pegMove(this);
 			}
+			delegateOnAreaTouched(pSceneTouchEvent, pTouchAreaLocalX, pTouchAreaLocalY);
 			return true;
 		}
 
