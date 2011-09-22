@@ -47,13 +47,13 @@ public class MonActiviteDansUneVue extends BaseGameActivity implements IScrollDe
 	private Scene scene;
 
 	private BitmapTextureAtlas texture;
-	private TextureRegion textureRegionTrou, textureRegionTrouLight, textureRegionPerso;
-	private TiledTextureRegion textureRegionPersoAnimated;
-	private Pion peg;
+	private TextureRegion regionTrou, regionTrouLight, regionDevil, regionAngel, regionTrash, regionHelp, regionCancel, regionAccept;
+	private TiledTextureRegion regionDevilAnimated, regionAngelAnimated;
+	private Pion movingDevil, movingAngel, currentMoving;
 	private PhysicsHandler physicsHandler;
 	private Rectangle rectangle;
 	private StaticPion[] holeSprite, holeLightSprite;
-	private Sprite perso;// , persoTmp;
+	private StaticPion devil, angel;// , persoTmp;
 	private boolean onRectangle;
 	private int currentHole = 0;
 	private HashMap<Long, StaticPion> mapPion = new HashMap<Long, MonActiviteDansUneVue.StaticPion>();
@@ -69,12 +69,12 @@ public class MonActiviteDansUneVue extends BaseGameActivity implements IScrollDe
 
 		@Override
 		public void onUpdate(float pSecondsElapsed) {
-			boolean rectangleTouch = rectangle.collidesWith(peg);
-			boolean persoTouch = perso.collidesWith(peg);
+			boolean rectangleTouch = rectangle.collidesWith(currentMoving);
+			boolean persoTouch = devil.collidesWith(currentMoving);
 
 			boolean holeTouch = false;
 			for (Sprite hole : holeSprite) {
-				holeTouch = hole.collidesWith(peg);
+				holeTouch = hole.collidesWith(currentMoving);
 				if (holeTouch) {
 					break;
 				}
@@ -95,7 +95,7 @@ public class MonActiviteDansUneVue extends BaseGameActivity implements IScrollDe
 				rectangle.setColor(pRed, pGreen, pBlue, pAlpha);
 				int i = 0;
 				for (Sprite hole : holeSprite) {
-					if (peg.isVisible() && peg.getX() < (hole.getX() + hole.getWidth())) {
+					if (currentMoving.isVisible() && currentMoving.getX() < (hole.getX() + hole.getWidth())) {
 						holeLightSprite[currentHole].setVisible(false);
 						holeLightSprite[i].setVisible(true);
 						currentHole = i;
@@ -105,18 +105,32 @@ public class MonActiviteDansUneVue extends BaseGameActivity implements IScrollDe
 				}
 			}
 
-			if (persoTouch && perso.getX() == peg.getX() && perso.getY() == peg.getY()) {
-				peg.setVisible(false);
+			if (persoTouch && devil.getX() == currentMoving.getX() && devil.getY() == currentMoving.getY()) {
+				currentMoving.setVisible(false);
 			}
 			if (holeTouch) {
 				for (StaticPion hole : holeSprite) {
-					if (hole.getX() == peg.getX() && hole.getY() == peg.getY()) {
-						peg.setVisible(false);
-						if (peg.getID_Pion() == -1 && hole.getID() == -1) {
-							StaticPion persoTmp = new StaticPion(peg.getX(), peg.getY(), textureRegionPerso);
+					if (hole.getX() == currentMoving.getX() && hole.getY() == currentMoving.getY()) {
+						currentMoving.setVisible(false);
+						boolean add = false;
+						if (currentMoving.getID_Pion() == -1 && hole.getID() == -1) {
+							add = true;
+
+						}
+						// else if (currentMoving.getID_Pion() != -1) {
+						// StaticPion pion = mapPion.get(currentMoving.getID_Pion());
+						// if ((pion.angel && !currentMoving.angel) || (!pion.angel && currentMoving.angel)) {
+						// pegMove(pion);
+						// }
+						// add = true;
+						// }
+
+						if (add) {
+							StaticPion persoTmp = new StaticPion(currentMoving.getX(), currentMoving.getY(), currentMoving.isAngel() ? regionAngel : regionDevil);
+							persoTmp.setAngel(currentMoving.isAngel());
 							persoTmp.setID(System.currentTimeMillis());
 							persoTmp.setSourcePeg(false);
-							peg.setID_Pion(persoTmp.getID());
+							currentMoving.setID_Pion(persoTmp.getID());
 							hole.setID(persoTmp.getID());
 							mapPion.put(persoTmp.getID(), persoTmp);
 							mapHole.put(persoTmp.getID(), hole);
@@ -161,10 +175,16 @@ public class MonActiviteDansUneVue extends BaseGameActivity implements IScrollDe
 
 		texture = new BitmapTextureAtlas(1024, 128);
 
-		textureRegionPersoAnimated = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(texture, this, "soldier.png", 0, 0, 8, 1);
-		textureRegionPerso = BitmapTextureAtlasTextureRegionFactory.createFromAsset(texture, this, "personnage.png", 320, 0);
-		textureRegionTrou = BitmapTextureAtlasTextureRegionFactory.createFromAsset(texture, this, "blackhole.png", 352, 0);
-		textureRegionTrouLight = BitmapTextureAtlasTextureRegionFactory.createFromAsset(texture, this, "blackhole_light.png", 480, 0);
+		regionDevilAnimated = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(texture, this, "devil_animated.png", 0, 0, 8, 1);
+		regionAngelAnimated = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(texture, this, "angel_animated.png", 256, 0, 8, 1);
+		regionDevil = BitmapTextureAtlasTextureRegionFactory.createFromAsset(texture, this, "devil.png", 512, 0);
+		regionAngel = BitmapTextureAtlasTextureRegionFactory.createFromAsset(texture, this, "angel.png", 544, 0);
+		regionTrou = BitmapTextureAtlasTextureRegionFactory.createFromAsset(texture, this, "blackhole.png", 576, 0);
+		regionTrouLight = BitmapTextureAtlasTextureRegionFactory.createFromAsset(texture, this, "blackhole_light.png", 704, 0);
+		regionTrash = BitmapTextureAtlasTextureRegionFactory.createFromAsset(texture, this, "trash.png", 832, 0);
+		regionCancel = BitmapTextureAtlasTextureRegionFactory.createFromAsset(texture, this, "cancel.png", 864, 0);
+		regionAccept = BitmapTextureAtlasTextureRegionFactory.createFromAsset(texture, this, "clean.png", 912, 0);
+		regionHelp = BitmapTextureAtlasTextureRegionFactory.createFromAsset(texture, this, "help.png", 960, 0);
 
 		getEngine().getTextureManager().loadTexture(texture);
 
@@ -184,38 +204,51 @@ public class MonActiviteDansUneVue extends BaseGameActivity implements IScrollDe
 		rectangle.setColor(pRed, pGreen, pBlue, pAlpha);
 		scene.attachChild(rectangle);
 
-		// Chargement d'une image
+		// Initialisation des trous
 		holeSprite = new StaticPion[2];
-		StaticPion hole = new StaticPion(50, 50, textureRegionTrou);
+		StaticPion hole = new StaticPion(50, 100, regionTrou);
 		scene.attachChild(hole);
 		holeSprite[0] = hole;
-		hole = new StaticPion(200, 50, textureRegionTrou);
+		hole = new StaticPion(200, 100, regionTrou);
 		scene.attachChild(hole);
 		holeSprite[1] = hole;
 
 		holeLightSprite = new StaticPion[2];
-		hole = new StaticPion(50, 50, textureRegionTrouLight);
+		hole = new StaticPion(50, 100, regionTrouLight);
 		scene.attachChild(hole);
 		hole.setVisible(false);
 		holeLightSprite[0] = hole;
-		hole = new StaticPion(200, 50, textureRegionTrouLight);
+		hole = new StaticPion(200, 100, regionTrouLight);
 		scene.attachChild(hole);
 		hole.setVisible(false);
 		holeLightSprite[1] = hole;
 
-		// Initialisation de notre tank
-		perso = new StaticPion(MonActiviteInteraction.CAMERA_LARGEUR / 2, MonActiviteInteraction.CAMERA_HAUTEUR - 100, textureRegionPerso);
-		scene.attachChild(perso);
-		peg = new Pion(MonActiviteInteraction.CAMERA_LARGEUR / 2, MonActiviteInteraction.CAMERA_HAUTEUR - 100, textureRegionPersoAnimated);
-		// Redimensionne notre tank
-		// peg.setScale(0.5f);
-		final PhysicsHandler physicsHandler = new PhysicsHandler(peg);
-		peg.registerUpdateHandler(physicsHandler);
-		scene.attachChild(peg);
-		// scene.registerTouchArea(peg);
-		scene.registerTouchArea(perso);
-		peg.setVisible(false);
+		// Initialisation des pions d'origine
+		devil = new StaticPion((MonActiviteInteraction.CAMERA_LARGEUR / 2) + 50, MonActiviteInteraction.CAMERA_HAUTEUR - 75, regionDevil);
+		devil.setAngel(false);
+		scene.attachChild(devil);
+		scene.registerTouchArea(devil);
+		angel = new StaticPion((MonActiviteInteraction.CAMERA_LARGEUR / 2) - 50, MonActiviteInteraction.CAMERA_HAUTEUR - 75, regionAngel);
+		angel.setAngel(true);
+		scene.attachChild(angel);
+		scene.registerTouchArea(angel);
 
+		// Initialisation des pions qui bougent
+		movingDevil = new Pion(0, 0, regionDevilAnimated);
+		movingDevil.setAngel(false);
+		final PhysicsHandler physicsHandler = new PhysicsHandler(movingDevil);
+		movingDevil.registerUpdateHandler(physicsHandler);
+		scene.attachChild(movingDevil);
+		movingDevil.setVisible(false);
+		movingAngel = new Pion(0, 0, regionAngelAnimated);
+		movingAngel.setAngel(true);
+		final PhysicsHandler physicsHandlerAngel = new PhysicsHandler(movingAngel);
+		movingAngel.registerUpdateHandler(physicsHandlerAngel);
+		scene.attachChild(movingAngel);
+		movingAngel.setVisible(false);
+		currentMoving = movingDevil;
+
+		// Parametrage de la scene
 		scene.registerUpdateHandler(updateHandler);
 		scene.setTouchAreaBindingEnabled(true);
 		return scene;
@@ -264,7 +297,7 @@ public class MonActiviteDansUneVue extends BaseGameActivity implements IScrollDe
 			@Override
 			public void run() {
 				if (mapPion.containsKey(sprite.getID())) {
-					peg.setID_Pion(-1l);
+					currentMoving.setID_Pion(-1l);
 					mapPion.remove(sprite.getID());
 					mapHole.get(sprite.getID()).setID(-1);
 					mapHole.remove(sprite.getID());
@@ -276,16 +309,22 @@ public class MonActiviteDansUneVue extends BaseGameActivity implements IScrollDe
 
 	}
 
-	public void delegateOnAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
+	public void delegateOnAreaTouched(boolean angel, TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
+		currentMoving = angel ? movingAngel : movingDevil;
 		if (pSceneTouchEvent.isActionDown() || pSceneTouchEvent.isActionMove()) {
-			peg.setID_Pion(-1);
-			peg.setVisible(true);
-			peg.setPosition(pSceneTouchEvent.getX() - peg.getWidth() / 2, (pSceneTouchEvent.getY() - peg.getHeight() / 2) - 50);
+			currentMoving.setID_Pion(-1);
+			currentMoving.setVisible(true);
+			currentMoving.setPosition(pSceneTouchEvent.getX() - currentMoving.getWidth() / 2, (pSceneTouchEvent.getY() - currentMoving.getHeight() / 2) - 50);
 		} else if (pSceneTouchEvent.isActionUp()) {
 			if (onRectangle) {
-				animatePeg(peg, MonActiviteInteraction.CAMERA_LARGEUR / 2, MonActiviteInteraction.CAMERA_HAUTEUR - 100);
+				if (angel) {
+					animatePeg(currentMoving, (MonActiviteInteraction.CAMERA_LARGEUR / 2) - 50, MonActiviteInteraction.CAMERA_HAUTEUR - 75);
+				} else {
+					animatePeg(currentMoving, (MonActiviteInteraction.CAMERA_LARGEUR / 2) + 50, MonActiviteInteraction.CAMERA_HAUTEUR - 75);
+
+				}
 			} else {
-				animatePeg(peg, holeLightSprite[currentHole].getX(), holeLightSprite[currentHole].getY());
+				animatePeg(currentMoving, holeLightSprite[currentHole].getX(), holeLightSprite[currentHole].getY());
 
 			}
 		}
@@ -299,12 +338,22 @@ public class MonActiviteDansUneVue extends BaseGameActivity implements IScrollDe
 
 		private long ID_Pion = -1l;
 
+		private boolean angel = true;
+
 		public long getID_Pion() {
 			return ID_Pion;
 		}
 
 		public void setID_Pion(long iD_Pion) {
 			ID_Pion = iD_Pion;
+		}
+
+		public boolean isAngel() {
+			return angel;
+		}
+
+		public void setAngel(boolean angel) {
+			this.angel = angel;
 		}
 
 		public Pion(float pX, float pY, float pTileWidth, float pTileHeight, TiledTextureRegion pTiledTextureRegion, RectangleVertexBuffer pRectangleVertexBuffer) {
@@ -323,21 +372,20 @@ public class MonActiviteDansUneVue extends BaseGameActivity implements IScrollDe
 			super(pX, pY, pTiledTextureRegion);
 		}
 
-		@Override
-		public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
-			delegateOnAreaTouched(pSceneTouchEvent, pTouchAreaLocalX, pTouchAreaLocalY);
-			return true;
-		}
-
 	}
 
 	class StaticPion extends Sprite {
 
 		private boolean sourcePeg = true;
+		private boolean angel = true;
 		private long ID = -1;
 
 		public void setSourcePeg(boolean sourcePeg) {
 			this.sourcePeg = sourcePeg;
+		}
+
+		public void setAngel(boolean angel) {
+			this.angel = angel;
 		}
 
 		public long getID() {
@@ -369,7 +417,7 @@ public class MonActiviteDansUneVue extends BaseGameActivity implements IScrollDe
 			if (pSceneTouchEvent.isActionDown() && !sourcePeg) {
 				pegMove(this);
 			}
-			delegateOnAreaTouched(pSceneTouchEvent, pTouchAreaLocalX, pTouchAreaLocalY);
+			delegateOnAreaTouched(angel, pSceneTouchEvent, pTouchAreaLocalX, pTouchAreaLocalY);
 			return true;
 		}
 
