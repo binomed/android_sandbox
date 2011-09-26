@@ -51,6 +51,7 @@ public class CustomViewActivity extends Activity {
 			} else {
 				view = new CustomView(getApplicationContext());
 			}
+			view.changeText("Hello World : " + arg0, arg0);
 			return view;
 		}
 	}
@@ -58,8 +59,11 @@ public class CustomViewActivity extends Activity {
 	class CustomView extends View {
 
 		private Paint paint = new Paint();
+		private Paint paintBlue = new Paint();
+		private Paint paintGray = new Paint();
 
 		private String text;
+		private int index;
 		private int mAscent;
 
 		public CustomView(Context context, AttributeSet attrs, int defStyle) {
@@ -73,8 +77,20 @@ public class CustomViewActivity extends Activity {
 		public CustomView(Context context) {
 			super(context);
 			paint.setColor(Color.WHITE);
-			paint.setTextSize(25);
+			paint.setTextSize(15);
 			paint.setAntiAlias(true);
+			paintBlue.setColor(Color.BLUE);
+			paintBlue.setTextSize(13);
+			paintBlue.setAntiAlias(true);
+			paintBlue.setColor(Color.GRAY);
+			paintBlue.setTextSize(13);
+			paintBlue.setAntiAlias(true);
+		}
+
+		public void changeText(String text, int index) {
+			this.text = text;
+			this.index = index;
+			invalidate();
 		}
 
 		/**
@@ -102,7 +118,41 @@ public class CustomViewActivity extends Activity {
 				result = specSize;
 			} else {
 				// Measure the text
-				result = (int) paint.measureText(text) + getPaddingLeft() + getPaddingRight();
+				result = 0;
+				switch (index % 10) {
+				case 9:
+					result += (int) paint.measureText(text);
+
+				case 8:
+					result += (int) paintBlue.measureText(text);
+
+				case 7:
+					result += (int) paintGray.measureText(text);
+
+				case 6:
+					result += (int) paint.measureText(text);
+
+				case 5:
+					result += (int) paintBlue.measureText(text);
+
+				case 4:
+					result += (int) paintGray.measureText(text);
+
+				case 3:
+					result += (int) paint.measureText(text);
+
+				case 2:
+					result += (int) paintBlue.measureText(text);
+
+				case 1:
+					result += (int) paintGray.measureText(text);
+
+				case 0:
+
+				default:
+					result += getPaddingLeft() + getPaddingRight();
+					break;
+				}
 				if (specMode == MeasureSpec.AT_MOST) {
 					// Respect AT_MOST value if that was what is called for by measureSpec
 					result = Math.min(result, specSize);
@@ -142,7 +192,40 @@ public class CustomViewActivity extends Activity {
 		@Override
 		protected void onDraw(Canvas canvas) {
 			super.onDraw(canvas);
-			canvas.drawText("Hello World", getPaddingLeft(), getPaddingTop() - mAscent, paint);
+			switch (index % 10) {
+			case 9:
+				canvas.drawText(text, getPaddingLeft() + 100, getPaddingTop() - mAscent, paint);
+
+			case 8:
+				canvas.drawText(text, getPaddingLeft(), getPaddingTop() - mAscent, paintBlue);
+
+			case 7:
+				canvas.drawText(text, getPaddingLeft(), getPaddingTop() - mAscent, paintGray);
+
+			case 6:
+				canvas.drawText(text, getPaddingLeft(), getPaddingTop() - mAscent, paint);
+
+			case 5:
+				canvas.drawText(text, getPaddingLeft(), getPaddingTop() - mAscent, paintBlue);
+
+			case 4:
+				canvas.drawText(text, getPaddingLeft(), getPaddingTop() - mAscent, paintGray);
+
+			case 3:
+				canvas.drawText(text, getPaddingLeft(), getPaddingTop() - mAscent, paint);
+
+			case 2:
+				canvas.drawText(text, getPaddingLeft(), getPaddingTop() - mAscent, paintBlue);
+
+			case 1:
+				canvas.drawText(text, getPaddingLeft(), getPaddingTop() - mAscent, paintGray);
+
+			case 0:
+				canvas.drawText(text, getPaddingLeft(), getPaddingTop() - mAscent, paint);
+
+			default:
+				break;
+			}
 			// invalidate();
 		}
 
