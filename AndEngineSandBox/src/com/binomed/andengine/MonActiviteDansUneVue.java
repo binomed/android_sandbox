@@ -12,13 +12,12 @@ import org.anddev.andengine.engine.options.resolutionpolicy.RatioResolutionPolic
 import org.anddev.andengine.entity.modifier.MoveModifier;
 import org.anddev.andengine.entity.primitive.Rectangle;
 import org.anddev.andengine.entity.scene.Scene;
-import org.anddev.andengine.entity.scene.Scene.IOnSceneTouchListener;
+import org.anddev.andengine.entity.scene.Scene.IOnAreaTouchListener;
+import org.anddev.andengine.entity.scene.Scene.ITouchArea;
 import org.anddev.andengine.entity.scene.background.ColorBackground;
 import org.anddev.andengine.entity.sprite.AnimatedSprite;
 import org.anddev.andengine.entity.sprite.Sprite;
 import org.anddev.andengine.input.touch.TouchEvent;
-import org.anddev.andengine.input.touch.detector.ScrollDetector;
-import org.anddev.andengine.input.touch.detector.ScrollDetector.IScrollDetectorListener;
 import org.anddev.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.anddev.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
 import org.anddev.andengine.opengl.texture.region.TextureRegion;
@@ -27,7 +26,7 @@ import org.anddev.andengine.opengl.vertex.RectangleVertexBuffer;
 import org.anddev.andengine.ui.activity.BaseGameActivity;
 import org.anddev.andengine.util.modifier.ease.EaseLinear;
 
-public class MonActiviteDansUneVue extends BaseGameActivity implements IScrollDetectorListener, IOnSceneTouchListener {
+public class MonActiviteDansUneVue extends BaseGameActivity implements IOnAreaTouchListener {
 
 	// ===========================================================
 	// Constants
@@ -54,6 +53,7 @@ public class MonActiviteDansUneVue extends BaseGameActivity implements IScrollDe
 	private Rectangle rectangle;
 	private StaticPion[] holeSprite, holeLightSprite;
 	private StaticPion devil, angel;// , persoTmp;
+	private Sprite helpSprite, cancelSprite, acceptSprite;
 	private boolean onRectangle;
 	private int currentHole = 0;
 	private HashMap<Long, StaticPion> mapPion = new HashMap<Long, MonActiviteDansUneVue.StaticPion>();
@@ -108,6 +108,7 @@ public class MonActiviteDansUneVue extends BaseGameActivity implements IScrollDe
 			if (persoTouch && devil.getX() == currentMoving.getX() && devil.getY() == currentMoving.getY()) {
 				currentMoving.setVisible(false);
 			}
+			boolean changeConfig = false;
 			if (holeTouch) {
 				for (StaticPion hole : holeSprite) {
 					if (hole.getX() == currentMoving.getX() && hole.getY() == currentMoving.getY()) {
@@ -116,15 +117,25 @@ public class MonActiviteDansUneVue extends BaseGameActivity implements IScrollDe
 						if (currentMoving.getID_Pion() == -1 && hole.getID() == -1) {
 							add = true;
 
-						}
-						// else if (currentMoving.getID_Pion() != -1) {
-						// StaticPion pion = mapPion.get(currentMoving.getID_Pion());
-						// if ((pion.angel && !currentMoving.angel) || (!pion.angel && currentMoving.angel)) {
-						// pegMove(pion);
-						// }
-						// add = true;
-						// }
+						} else if (hole.getID() != -1 && (currentMoving.getID_Pion() == -1 || currentMoving.getID_Pion() != hole.getID())) {
+							final StaticPion pion = mapPion.get(hole.getID());
+							if ((pion.angel && !currentMoving.angel) || (!pion.angel && currentMoving.angel)) {
+								MonActiviteDansUneVue.this.runOnUpdateThread(new Runnable() {
 
+									@Override
+									public void run() {
+										if (mapPion.containsKey(pion.getID())) {
+											mapPion.remove(pion.getID());
+											mapHole.remove(pion.getID());
+											scene.unregisterTouchArea(pion);
+											scene.detachChild(pion);
+										}
+									}
+								});
+								add = true;
+							}
+						}
+						changeConfig = add;
 						if (add) {
 							StaticPion persoTmp = new StaticPion(currentMoving.getX(), currentMoving.getY(), currentMoving.isAngel() ? regionAngel : regionDevil);
 							persoTmp.setAngel(currentMoving.isAngel());
@@ -132,6 +143,7 @@ public class MonActiviteDansUneVue extends BaseGameActivity implements IScrollDe
 							persoTmp.setSourcePeg(false);
 							currentMoving.setID_Pion(persoTmp.getID());
 							hole.setID(persoTmp.getID());
+							hole.setAngel(currentMoving.isAngel());
 							mapPion.put(persoTmp.getID(), persoTmp);
 							mapHole.put(persoTmp.getID(), hole);
 							scene.attachChild(persoTmp);
@@ -140,6 +152,27 @@ public class MonActiviteDansUneVue extends BaseGameActivity implements IScrollDe
 						break;
 					}
 				}
+			}
+
+			boolean showHelp = true;
+			for (StaticPion hole : holeSprite) {
+				showHelp = showHelp && hole.getID() != -1;
+			}
+			if (showHelp && (changeConfig || !helpSprite.isVisible())) {
+				if (changeConfig) {
+					helpSprite.setVisible(false);
+					cancelSprite.setVisible(false);
+					acceptSprite.setVisible(false);
+				}
+
+				if (!helpSprite.isVisible() && !cancelSprite.isVisible() && !acceptSprite.isVisible()) {
+
+					helpSprite.setVisible(true);
+				}
+			} else if (!showHelp) {
+				helpSprite.setVisible(false);
+				cancelSprite.setVisible(false);
+				acceptSprite.setVisible(false);
 			}
 
 		}
@@ -248,9 +281,24 @@ public class MonActiviteDansUneVue extends BaseGameActivity implements IScrollDe
 		movingAngel.setVisible(false);
 		currentMoving = movingDevil;
 
+		// Initialisation des sprite de réponses
+		helpSprite = new Sprite((MonActiviteInteraction.CAMERA_LARGEUR / 2), 25, regionHelp);
+		helpSprite.setVisible(false);
+		scene.attachChild(helpSprite);
+		scene.registerTouchArea(helpSprite);
+		cancelSprite = new Sprite((MonActiviteInteraction.CAMERA_LARGEUR / 2), 25, regionCancel);
+		cancelSprite.setVisible(false);
+		scene.attachChild(cancelSprite);
+		scene.registerTouchArea(cancelSprite);
+		acceptSprite = new Sprite((MonActiviteInteraction.CAMERA_LARGEUR / 2), 25, regionAccept);
+		acceptSprite.setVisible(false);
+		scene.attachChild(acceptSprite);
+		scene.registerTouchArea(acceptSprite);
+
 		// Parametrage de la scene
 		scene.registerUpdateHandler(updateHandler);
 		scene.setTouchAreaBindingEnabled(true);
+		scene.setOnAreaTouchListener(this);
 		return scene;
 	}
 
@@ -260,13 +308,38 @@ public class MonActiviteDansUneVue extends BaseGameActivity implements IScrollDe
 	}
 
 	@Override
-	public boolean onSceneTouchEvent(Scene pScene, TouchEvent pSceneTouchEvent) {
-		return true;
-	}
+	public boolean onAreaTouched(TouchEvent pSceneTouchEvent, ITouchArea pTouchArea, float pTouchAreaLocalX, float pTouchAreaLocalY) {
+		if (pSceneTouchEvent.isActionDown()) {
+			if (helpSprite.isVisible() && pTouchArea != null && pTouchArea.equals(helpSprite)) {
+				helpSprite.setVisible(false);
+				boolean valid = true;
+				long id = -1, tmp = -1;
+				for (StaticPion hole : holeSprite) {
 
-	@Override
-	public void onScroll(ScrollDetector pScollDetector, TouchEvent pTouchEvent, float pDistanceX, float pDistanceY) {
-		// this.mCamera.offsetCenter(-pDistanceX, -pDistanceY);
+					if (hole.angel) {
+						tmp = 0;
+					} else {
+						tmp = 1;
+					}
+					if (id == -1) {
+						if (hole.angel) {
+							id = 0;
+						} else {
+							id = 1;
+						}
+					}
+					valid = valid && tmp == id;
+				}
+
+				if (valid) {
+					acceptSprite.setVisible(true);
+				} else {
+					cancelSprite.setVisible(true);
+				}
+			}
+			return true;
+		}
+		return false;
 	}
 
 	// ===========================================================
