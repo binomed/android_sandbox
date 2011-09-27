@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Paint.Style;
 import android.os.Bundle;
 import android.util.AttributeSet;
 import android.view.View;
@@ -51,20 +52,23 @@ public class CustomViewActivity extends Activity {
 			} else {
 				view = new CustomView(getApplicationContext());
 			}
-			view.changeText("Hello World : " + arg0, arg0);
+			view.changeText("Hello : " + arg0, arg0);
 			return view;
 		}
 	}
 
 	class CustomView extends View {
 
+		private Paint mainPaint = new Paint();
 		private Paint paint = new Paint();
 		private Paint paintBlue = new Paint();
 		private Paint paintGray = new Paint();
 
 		private String text;
+		private String textLong = "un texte qui est long et qui merrite d'etre couper dcar c'est long";
 		private int index;
-		private int mAscent;
+		private int mAscent, mAscentMain;
+		private int specSizeWidth;
 
 		public CustomView(Context context, AttributeSet attrs, int defStyle) {
 			super(context, attrs, defStyle);
@@ -76,21 +80,27 @@ public class CustomViewActivity extends Activity {
 
 		public CustomView(Context context) {
 			super(context);
+			mainPaint.setColor(Color.WHITE);
+			mainPaint.setStyle(Style.FILL);
+			mainPaint.setTextSize(20);
+			mainPaint.setAntiAlias(true);
 			paint.setColor(Color.WHITE);
 			paint.setTextSize(15);
 			paint.setAntiAlias(true);
 			paintBlue.setColor(Color.BLUE);
-			paintBlue.setTextSize(13);
+			paintBlue.setTextSize(15);
 			paintBlue.setAntiAlias(true);
-			paintBlue.setColor(Color.GRAY);
-			paintBlue.setTextSize(13);
-			paintBlue.setAntiAlias(true);
+			paintGray.setColor(Color.GRAY);
+			paintGray.setTextSize(15);
+			paintGray.setAntiAlias(true);
 		}
 
 		public void changeText(String text, int index) {
 			this.text = text;
 			this.index = index;
+			requestLayout();
 			invalidate();
+
 		}
 
 		/**
@@ -112,6 +122,7 @@ public class CustomViewActivity extends Activity {
 			int result = 0;
 			int specMode = MeasureSpec.getMode(measureSpec);
 			int specSize = MeasureSpec.getSize(measureSpec);
+			this.specSizeWidth = specSize;
 
 			if (specMode == MeasureSpec.EXACTLY) {
 				// We were told how big to be
@@ -124,30 +135,31 @@ public class CustomViewActivity extends Activity {
 					result += (int) paint.measureText(text);
 
 				case 8:
-					result += (int) paintBlue.measureText(text);
+					result += (int) paint.measureText(text);
 
 				case 7:
-					result += (int) paintGray.measureText(text);
+					result += (int) paint.measureText(text);
 
 				case 6:
 					result += (int) paint.measureText(text);
 
 				case 5:
-					result += (int) paintBlue.measureText(text);
+					result += (int) paint.measureText(text);
 
 				case 4:
-					result += (int) paintGray.measureText(text);
+					result += (int) paint.measureText(text);
 
 				case 3:
 					result += (int) paint.measureText(text);
 
 				case 2:
-					result += (int) paintBlue.measureText(text);
+					result += (int) paint.measureText(text);
 
 				case 1:
-					result += (int) paintGray.measureText(text);
+					result += (int) paint.measureText(text);
 
 				case 0:
+					result += (int) paint.measureText(text);
 
 				default:
 					result += getPaddingLeft() + getPaddingRight();
@@ -175,12 +187,39 @@ public class CustomViewActivity extends Activity {
 			int specSize = MeasureSpec.getSize(measureSpec);
 
 			mAscent = (int) paint.ascent();
+			mAscentMain = (int) mainPaint.ascent();
 			if (specMode == MeasureSpec.EXACTLY) {
 				// We were told how big to be
 				result = specSize;
 			} else {
+
+				int width = getPaddingLeft() + getPaddingRight();
+				int nbLines = 1, nbLinesMain = 1;
+				int i = index % 10;
+				while (i >= 0) {
+					width += (int) paint.measureText(text) + 5;
+					if (width > specSizeWidth) {
+						nbLines++;
+						width = getPaddingLeft() + getPaddingRight();
+					}
+					i--;
+
+				}
+				String[] split = textLong.split(" ");
+				width = getPaddingLeft() + getPaddingRight();
+				for (String splitText : split) {
+					width += (int) mainPaint.measureText(splitText + " ");
+					if (width > specSizeWidth) {
+						nbLinesMain++;
+						width = getPaddingLeft() + getPaddingRight();
+					}
+
+				}
+
+				result = (nbLines * (int) (-mAscent + paint.descent())) + (nbLinesMain * (int) (-mAscentMain + mainPaint.descent())) + 5;
+
 				// Measure the text (beware: ascent is a negative number)
-				result = (int) (-mAscent + paint.descent()) + getPaddingTop() + getPaddingBottom();
+				// result = (int) (-mAscent + paint.descent()) + getPaddingTop() + getPaddingBottom();
 				if (specMode == MeasureSpec.AT_MOST) {
 					// Respect AT_MOST value if that was what is called for by measureSpec
 					result = Math.min(result, specSize);
@@ -192,39 +231,57 @@ public class CustomViewActivity extends Activity {
 		@Override
 		protected void onDraw(Canvas canvas) {
 			super.onDraw(canvas);
-			switch (index % 10) {
-			case 9:
-				canvas.drawText(text, getPaddingLeft() + 100, getPaddingTop() - mAscent, paint);
 
-			case 8:
-				canvas.drawText(text, getPaddingLeft(), getPaddingTop() - mAscent, paintBlue);
+			int width = 0;
+			int i = index % 10;
+			int posY = getPaddingTop() - mAscentMain;
+			int posX = getPaddingLeft();
+			String[] split = textLong.split(" ");
+			width = getPaddingLeft() + getPaddingRight();
+			for (String splitText : split) {
+				width += (int) mainPaint.measureText(splitText + " ");
+				if (width > (specSizeWidth - getPaddingRight())) {
+					width = 0;
+					;
+					posX = getPaddingLeft();
+					posY += (int) (-mAscentMain + mainPaint.descent());
+				}
+				canvas.drawText(splitText + " ", posX, posY, mainPaint);
+				posX += mainPaint.measureText(splitText + " ");
 
-			case 7:
-				canvas.drawText(text, getPaddingLeft(), getPaddingTop() - mAscent, paintGray);
+			}
+			posY += 5 - mAscent;
+			width = getPaddingLeft() + getPaddingRight();
+			posX = getPaddingLeft();
+			Paint tmpPaint = null;
+			while (i >= 0) {
 
-			case 6:
-				canvas.drawText(text, getPaddingLeft(), getPaddingTop() - mAscent, paint);
+				width += (int) paint.measureText(text);
+				if (width > (specSizeWidth - getPaddingRight())) {
+					width = 0;
+					posX = getPaddingLeft();
+					posY += (int) (-mAscent + paint.descent());
+				}
+				switch (i % 3) {
+				case 0:
+					tmpPaint = paint;
 
-			case 5:
-				canvas.drawText(text, getPaddingLeft(), getPaddingTop() - mAscent, paintBlue);
+					break;
+				case 1:
+					tmpPaint = paintBlue;
 
-			case 4:
-				canvas.drawText(text, getPaddingLeft(), getPaddingTop() - mAscent, paintGray);
+					break;
+				case 2:
+					tmpPaint = paintGray;
 
-			case 3:
-				canvas.drawText(text, getPaddingLeft(), getPaddingTop() - mAscent, paint);
+					break;
 
-			case 2:
-				canvas.drawText(text, getPaddingLeft(), getPaddingTop() - mAscent, paintBlue);
-
-			case 1:
-				canvas.drawText(text, getPaddingLeft(), getPaddingTop() - mAscent, paintGray);
-
-			case 0:
-				canvas.drawText(text, getPaddingLeft(), getPaddingTop() - mAscent, paint);
-
-			default:
-				break;
+				default:
+					break;
+				}
+				canvas.drawText(text, posX, posY, tmpPaint);
+				posX += paint.measureText(text) + 5;
+				i--;
 			}
 			// invalidate();
 		}
