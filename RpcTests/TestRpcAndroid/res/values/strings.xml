@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="hello">Hello World, TestRpcAndroidActivity!</string>
+    <string name="app_name">TestRpcAndroid</string>
+    <string name="btnClick">ClickMe</string>
+    <string name="btnRequestFactory">RequestFactory</string>
+    <string name="lblRequestFactory">RequestFactory</string>
+
+</resources>

@@ -17,6 +17,7 @@ public class CustomViewActivity extends Activity {
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+		// Debug.startMethodTracing("CustomView");
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
@@ -25,6 +26,12 @@ public class CustomViewActivity extends Activity {
 
 		// setContentView(new CustomView(this));
 
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		// Debug.stopMethodTracing();
 	}
 
 	class CustomAdapter extends BaseAdapter {
