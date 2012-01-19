@@ -14,19 +14,26 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 		<url-pattern>/testrpcappengine/test</url-pattern>
 	</servlet-mapping>
 	
+	-->
+	
+	<!-- Java-Json-RPC -->
+	
 	<servlet>
 	<servlet-name>JsonRpcServlet</servlet-name>
 		<servlet-class>cz.eman.jsonrpc.server.JsonRpcServlet</servlet-class>
 		<init-param>
-			<param-name>test1</param-name>
-			<param-value>cz.eman.jsonrpc.server.example.WebService</param-value>
+			<param-name>javajsonrpc</param-name>
+			<param-value>com.binomed.server.rpc.javajsonrpc.JavaJsonRpcService</param-value>
 		</init-param>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>JsonRpcServlet</servlet-name>
 		<url-pattern>/jsonrpc/*</url-pattern>
 	</servlet-mapping>
-	-->
+	
+	
+	<!-- Request Factory-->
+	
 	<servlet>
     <servlet-name>requestFactoryServlet</servlet-name>
 	    <servlet-class>com.google.web.bindery.requestfactory.server.RequestFactoryServlet</servlet-class>
@@ -43,19 +50,11 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	    <url-pattern>/gwtRequest</url-pattern>
 	  </servlet-mapping>
 	
+	
+	<!-- Other -->
+	
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
 	</welcome-file-list>
 	
-	<!-- 
-	<security-constraint>
-    <web-resource-collection>
-      <web-resource-name>gwtRequest</web-resource-name>
-      <url-pattern>/gwtRequest/*</url-pattern>
-    </web-resource-collection>
-    <auth-constraint>
-      <role-name>*</role-name>
-    </auth-constraint>
-  </security-constraint>
-	 -->
 </web-app>
