@@ -15,6 +15,7 @@
 package com.binomed.client.requestfactory;
 
 import com.binomed.client.requestfactory.shared.RequestFactoryObjectAProxy;
+import com.binomed.client.requestfactory.shared.RequestFactoryObjectBProxy;
 import com.google.web.bindery.requestfactory.shared.Request;
 import com.google.web.bindery.requestfactory.shared.RequestContext;
 import com.google.web.bindery.requestfactory.shared.RequestFactory;
@@ -28,6 +29,9 @@ public interface MyRequestFactory extends RequestFactory {
 		 * Retrieve a "Hello, World" message from the server.
 		 */
 		Request<RequestFactoryObjectAProxy> getMessage();
+
+		Request<RequestFactoryObjectAProxy> getMessageWithParameter(RequestFactoryObjectBProxy parameter);
+
 	}
 
 	HelloWorldRequest helloWorldRequest();

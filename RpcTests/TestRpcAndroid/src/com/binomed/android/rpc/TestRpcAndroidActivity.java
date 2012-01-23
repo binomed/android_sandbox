@@ -1,8 +1,9 @@
 package com.binomed.android.rpc;
 
 import java.net.URL;
+import java.util.Map.Entry;
 
-import android.app.Activity;
+import android.app.TabActivity;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -11,22 +12,25 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TabHost;
+import android.widget.TabHost.TabSpec;
 
 import com.binomed.android.rpc.javajsonrpc.JavaJsonRpcServiceProxy;
 import com.binomed.android.rpc.requestFactory.Util;
 import com.binomed.android.rpc.rest.RestletAccesClass;
+import com.binomed.client.IObjectA;
+import com.binomed.client.IObjectB;
+import com.binomed.client.IObjectBMap;
 import com.binomed.client.requestfactory.MyRequestFactory;
 import com.binomed.client.requestfactory.MyRequestFactory.HelloWorldRequest;
 import com.binomed.client.requestfactory.shared.RequestFactoryObjectAProxy;
-import com.binomed.client.rest.dto.RestletObjectA;
-import com.binomed.client.rpc.javajsonrpc.dto.JavaJsonRpcObjectA;
 import com.binomed.rpc.R;
 import com.google.web.bindery.requestfactory.shared.Receiver;
 import com.google.web.bindery.requestfactory.shared.ServerFailure;
 
 import cz.eman.jsonrpc.client.HttpJsonClient;
 
-public class TestRpcAndroidActivity extends Activity implements OnClickListener {
+public class TestRpcAndroidActivity extends TabActivity implements OnClickListener {
 
 	/** Called when the activity is first created. */
 
@@ -34,8 +38,12 @@ public class TestRpcAndroidActivity extends Activity implements OnClickListener 
 	private static final String TAG = "TestAndroidActivity";
 
 	private EditText requestFactory, jsonRpc, restlet;
-	private Button btnRequestFactory, btnJsonRpc, btnRestlet;
+	private Button btnRequestFactory, btnJsonRpc, btnRestlet, btnRequestFactoryParams, btnJsonRpcParams, btnRestletParams;
 	private Context mContext;
+
+	private static final int JSON_RPC = 1;
+	private static final int REQUEST_FACTORY = 2;
+	private static final int REST = 3;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -47,66 +55,114 @@ public class TestRpcAndroidActivity extends Activity implements OnClickListener 
 	protected void onResume() {
 		super.onResume();
 
-		setContentView(R.layout.main);
+		setContentView(R.layout.tabs);
 		mContext = this;
 
-		requestFactory = (EditText) findViewById(R.id.requestFactoryResult);
+		TabHost tabHost = getTabHost();
+
+		// Tab for Json Rpc
+		TabSpec jsonRpcTab = tabHost.newTabSpec("JsonRpc");
+		// setting Title and Icon for the Tab
+		jsonRpcTab.setIndicator("Json Rpc");
+		jsonRpcTab.setContent(R.id.jsonRpcLayout);
+
+		// Tab for Request Factory
+		TabSpec requestFactoryTab = tabHost.newTabSpec("RequestFactory");
+		requestFactoryTab.setIndicator("Request Factory");
+		requestFactoryTab.setContent(R.id.requestFactoryLayout);
+
+		// Tab for Rest
+		TabSpec restTab = tabHost.newTabSpec("Rest");
+		restTab.setIndicator("Rest");
+		restTab.setContent(R.id.restLayout);
+
+		// Adding all TabSpec to TabHost
+		tabHost.addTab(jsonRpcTab); // Adding photos tab
+		tabHost.addTab(requestFactoryTab); // Adding songs tab
+		tabHost.addTab(restTab); // Adding videos tab
+
+		requestFactory = (EditText) findViewById(R.id.requestFactory);
 		btnRequestFactory = (Button) findViewById(R.id.btnRequestFactory);
-		jsonRpc = (EditText) findViewById(R.id.jsonRPCResult);
-		btnJsonRpc = (Button) findViewById(R.id.btnJsonRPC);
-		restlet = (EditText) findViewById(R.id.restletResult);
-		btnRestlet = (Button) findViewById(R.id.btnRestlet);
+		btnRequestFactoryParams = (Button) findViewById(R.id.btnRequestFactoryParams);
+		jsonRpc = (EditText) findViewById(R.id.jsonRpc);
+		btnJsonRpc = (Button) findViewById(R.id.btnJsonRpc);
+		btnJsonRpcParams = (Button) findViewById(R.id.btnJsonParams);
+		restlet = (EditText) findViewById(R.id.rest);
+		btnRestlet = (Button) findViewById(R.id.btnRest);
+		btnRestletParams = (Button) findViewById(R.id.btnRestParams);
 
 		btnRequestFactory.setOnClickListener(this);
+		btnRequestFactoryParams.setOnClickListener(this);
 		btnJsonRpc.setOnClickListener(this);
+		btnJsonRpcParams.setOnClickListener(this);
 		btnRestlet.setOnClickListener(this);
+		btnRestletParams.setOnClickListener(this);
 
 	}
 
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
-		case R.id.btnJsonRPC: {
-			btnJsonRpc.setEnabled(false);
-			jsonRpc.setText("contacting server");
-
-			// Use an AsyncTask to avoid blocking the UI thread
-			new AsyncTask<Void, Void, JavaJsonRpcObjectA>() {
-
-				@Override
-				protected JavaJsonRpcObjectA doInBackground(Void... arg0) {
-					try {
-						JavaJsonRpcServiceProxy proxy = new JavaJsonRpcServiceProxy(new HttpJsonClient(new URL(LOCALHOST + "/jsonrpc/javajsonrpc")));
-						return proxy.getMessage();
-					} catch (Exception e) {
-						Log.e(TAG, e.getMessage(), e);
-						return null;
-					}
-				}
-
-				@Override
-				protected void onPostExecute(JavaJsonRpcObjectA result) {
-					if (result != null) {
-						jsonRpc.setText(result.getName() + ", B : " + result.getObjectB().getName());
-					} else {
-						jsonRpc.setText("Failure during getting result");
-
-					}
-					btnJsonRpc.setEnabled(true);
-				}
-			}.execute();
+		case R.id.btnJsonRpc: {
+			new TaskTest(jsonRpc, btnJsonRpc, JSON_RPC, false).execute();
+			break;
+		}
+		case R.id.btnJsonParams: {
+			new TaskTest(jsonRpc, btnJsonRpcParams, JSON_RPC, true).execute();
 			break;
 		}
 		case R.id.btnRequestFactory: {
-			btnRequestFactory.setEnabled(false);
-			requestFactory.setText("contacting server");
+			new TaskTest(requestFactory, btnRequestFactory, REQUEST_FACTORY, false).execute();
+			break;
+		}
+		case R.id.btnRequestFactoryParams: {
+			new TaskTest(requestFactory, btnRequestFactoryParams, REQUEST_FACTORY, true).execute();
+			break;
+		}
+		case R.id.btnRest: {
+			new TaskTest(restlet, btnRestlet, REST, false).execute();
+			break;
+		}
+		case R.id.btnRestParams: {
+			new TaskTest(restlet, btnRestletParams, REST, true).execute();
+			break;
+		}
+		default:
+			break;
+		}
 
-			// Use an AsyncTask to avoid blocking the UI thread
-			new AsyncTask<Void, Void, RequestFactoryObjectAProxy>() {
-				private RequestFactoryObjectAProxy message;
+	}
 
-				@Override
-				protected RequestFactoryObjectAProxy doInBackground(Void... arg0) {
+	class TaskTest extends AsyncTask<Void, Void, IObjectA<? extends IObjectB>> {
+
+		private EditText text;
+		private Button btn;
+		private int type;
+		private boolean withParams;
+		private IObjectA<? extends IObjectB> message;
+		private long time;
+
+		public TaskTest(EditText text, Button btn, int type, boolean params) {
+			this.text = text;
+			this.btn = btn;
+			this.type = type;
+			this.withParams = params;
+			btn.setEnabled(false);
+			text.setText("contacting server");
+		}
+
+		@Override
+		protected IObjectA<? extends IObjectB> doInBackground(Void... params) {
+			time = System.currentTimeMillis();
+			try {
+				IObjectA<? extends IObjectB> result = null;
+				switch (type) {
+				case JSON_RPC: {
+					JavaJsonRpcServiceProxy proxy = new JavaJsonRpcServiceProxy(new HttpJsonClient(new URL(LOCALHOST + "/jsonrpc/javajsonrpc")));
+					result = proxy.getMessage();
+					break;
+				}
+				case REQUEST_FACTORY: {
 					Thread.currentThread().setContextClassLoader(mContext.getClassLoader());
 					MyRequestFactory requestFactory = Util.getRequestFactory(mContext, MyRequestFactory.class);
 					final HelloWorldRequest request = requestFactory.helloWorldRequest();
@@ -123,57 +179,74 @@ public class TestRpcAndroidActivity extends Activity implements OnClickListener 
 							message = result;
 						}
 					});
-					return message;
+					result = message;
+					break;
+				}
+				case REST: {
+					result = RestletAccesClass.callService();
+					break;
+				}
+				default:
+					break;
 				}
 
-				@Override
-				protected void onPostExecute(RequestFactoryObjectAProxy result) {
-					if (result != null) {
-						requestFactory.setText(result.getName() + ", B : " + result.getObjectB().getName());
-					} else {
-						requestFactory.setText("Failure during getting result");
-
-					}
-					btnRequestFactory.setEnabled(true);
-				}
-			}.execute();
-
-			break;
+				return result;
+			} catch (Exception e) {
+				Log.e(TAG, "Error during contacting server", e);
+				return null;
+			}
 		}
-		case R.id.btnRestlet: {
-			btnRestlet.setEnabled(false);
-			restlet.setText("contacting server");
 
-			// Use an AsyncTask to avoid blocking the UI thread
-			new AsyncTask<Void, Void, RestletObjectA>() {
+		@Override
+		protected void onPostExecute(IObjectA<? extends IObjectB> result) {
+			String typeName = null;
+			switch (type) {
+			case JSON_RPC:
+				typeName = "Json Rpc";
+				break;
+			case REQUEST_FACTORY:
+				typeName = "Request Fatory";
+				break;
+			case REST:
+				typeName = "Restlet";
+				break;
 
-				@Override
-				protected RestletObjectA doInBackground(Void... arg0) {
-					try {
-						return RestletAccesClass.callService();
-					} catch (Exception e) {
-						Log.e(TAG, "Error during calling rest server", e);
-						return null;
+			default:
+				break;
+			}
+			if (result != null) {
+				StringBuilder str = new StringBuilder();
+				str.append("Type : ").append(typeName).append("\n");
+				str.append("Time : ").append(String.valueOf(System.currentTimeMillis() - time)).append("ms \n");
+				str.append("Object A : ").append(result.getName()).append("\n");
+				IObjectB objB = result.getObjectB();
+				if (objB instanceof IObjectBMap) {
+					str.append("Object B Map : ").append(objB.getName()).append("\n");
+					if (((IObjectBMap) objB).getMap() != null) {
+						for (Entry<String, String> entry : ((IObjectBMap) objB).getMap().entrySet()) {
+							str.append("-> : Key").append(entry.getKey()).append(" : ").append(entry.getValue()).append("\n");
+						}
+					}
+				} else {
+					str.append("Object B: ").append(objB.getName()).append("\n");
+				}
+				if ((result.getListObjectB() == null) || (result.getListObjectB().size() == 0)) {
+					str.append("Nb objects B: ").append(0).append("\n");
+				} else {
+					str.append("Nb objects B: ").append(result.getListObjectB().size()).append("\n");
+					for (IObjectB objBTmp : result.getListObjectB()) {
+						str.append("--> ").append(objBTmp.getName()).append("\n");
 					}
 				}
 
-				@Override
-				protected void onPostExecute(RestletObjectA result) {
-					if (result != null) {
-						restlet.setText(result.getName() + ", B : " + result.getObjectB().getName());
-					} else {
-						restlet.setText("Failure during getting result");
+				text.setText(str.toString());
+			} else {
+				text.setText("Failure during getting result");
 
-					}
-					btnRestlet.setEnabled(true);
-				}
-			}.execute();
-
-			break;
-		}
-		default:
-			break;
+			}
+			btn.setEnabled(true);
 		}
 
 	}
+
 }

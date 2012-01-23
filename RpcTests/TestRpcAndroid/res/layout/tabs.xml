@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TabHost xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@android:id/tabhost"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+        <TabWidget
+            android:id="@android:id/tabs"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
+        <FrameLayout
+            android:id="@android:id/tabcontent"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
+            <RelativeLayout 
+			    android:id="@+id/jsonRpcLayout"
+			    android:layout_width="fill_parent"
+			    android:layout_height="fill_parent"
+			    >
+			    <Button
+			        android:id="@+id/btnJsonRpc"
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:layout_alignParentLeft="true"
+			        android:text="Without Parameters" />
+			    <Button
+			        android:id="@+id/btnJsonParams"
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:layout_alignParentRight="true"
+			        android:layout_toRightOf="@+id/btnJsonRpc"
+			        android:text="With Parameters" />
+			    <EditText
+			        android:id="@+id/jsonRpc"
+			        android:layout_width="fill_parent"
+			        android:layout_height="fill_parent"
+			        android:layout_below="@+id/btnJsonRpc"
+			        />
+			    
+			</RelativeLayout>
+			<RelativeLayout 
+			    android:id="@+id/requestFactoryLayout"
+			    android:layout_width="fill_parent"
+			    android:layout_height="fill_parent"
+			    >
+			    <Button
+			        android:id="@+id/btnRequestFactory"
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:layout_alignParentLeft="true"
+			        android:text="Without Parameters" />
+			    <Button
+			        android:id="@+id/btnRequestFactoryParams"
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:layout_alignParentRight="true"
+			        android:layout_toRightOf="@+id/btnRequestFactory"
+			        android:text="With Parameters" />
+			    <EditText
+			        android:id="@+id/requestFactory"
+			        android:layout_width="fill_parent"
+			        android:layout_height="fill_parent"
+			        android:layout_below="@+id/btnRequestFactory"
+			        />
+			</RelativeLayout>
+			<RelativeLayout 
+			    android:id="@+id/restLayout"
+			    android:layout_width="fill_parent"
+			    android:layout_height="fill_parent"
+			    >
+			    <Button
+			        android:id="@+id/btnRest"
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:layout_alignParentLeft="true"
+			        android:text="Without Parameters" />
+			    <Button
+			        android:id="@+id/btnRestParams"
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:layout_alignParentRight="true"
+			        android:layout_toRightOf="@+id/btnRest"
+			        android:text="With Parameters" />
+			    <EditText
+			        android:id="@+id/rest"
+			        android:layout_width="fill_parent"
+			        android:layout_height="fill_parent"
+			        android:layout_below="@+id/btnRest"
+			        />
+			</RelativeLayout>                
+         </FrameLayout>
+    </LinearLayout>
+</TabHost>

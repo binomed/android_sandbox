@@ -34,4 +34,13 @@ public class HelloWorldService {
 
 		return result;
 	}
+
+	public static RequestFactoryObjectA getMessageWithParameter(RequestFactoryObjectB parameter) {
+
+		RequestFactoryObjectA result = new RequestFactoryObjectA();
+		result.setName("WithParameter");
+		result.setObjectB(parameter);
+
+		return result;
+	}
 }
