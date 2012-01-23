@@ -180,3 +180,8 @@
 /RpcTests/TestRpcAndroid/bin/res/drawable-mdpi/ic_launcher.png
 /RpcTests/TestRpcAndroid/bin/resources.ap_
 /RpcTests/TestRpcAndroid/gen/com/binomed/rpc/R.java
+/RpcTests/TestRpcAppEngine/war/WEB-INF/classes/com/binomed/client/.gitignore
+/RpcTests/TestRpcAppEngine/war/WEB-INF/classes/com/binomed/server/requestfactory/.gitignore
+/RpcTests/TestRpcAppEngine/war/WEB-INF/classes/com/binomed/server/requestfactory/TestRpcAppEngine.gwt.xml
+/RpcTests/TestRpcAppEngine/war/WEB-INF/classes/com/binomed/server/rpc/javajsonrpc/JavaJsonRpcService.class
+/RpcTests/TestRpcAndroid/bin/classes/com/binomed/.gitignore

@@ -14,9 +14,11 @@ import android.widget.EditText;
 
 import com.binomed.android.rpc.javajsonrpc.JavaJsonRpcServiceProxy;
 import com.binomed.android.rpc.requestFactory.Util;
+import com.binomed.android.rpc.rest.RestletAccesClass;
 import com.binomed.client.requestfactory.MyRequestFactory;
 import com.binomed.client.requestfactory.MyRequestFactory.HelloWorldRequest;
 import com.binomed.client.requestfactory.shared.RequestFactoryObjectAProxy;
+import com.binomed.client.rest.dto.RestletObjectA;
 import com.binomed.client.rpc.javajsonrpc.dto.JavaJsonRpcObjectA;
 import com.binomed.rpc.R;
 import com.google.web.bindery.requestfactory.shared.Receiver;
@@ -139,6 +141,33 @@ public class TestRpcAndroidActivity extends Activity implements OnClickListener 
 			break;
 		}
 		case R.id.btnRestlet: {
+			btnRestlet.setEnabled(false);
+			restlet.setText("contacting server");
+
+			// Use an AsyncTask to avoid blocking the UI thread
+			new AsyncTask<Void, Void, RestletObjectA>() {
+
+				@Override
+				protected RestletObjectA doInBackground(Void... arg0) {
+					try {
+						return RestletAccesClass.callService();
+					} catch (Exception e) {
+						Log.e(TAG, "Error during calling rest server", e);
+						return null;
+					}
+				}
+
+				@Override
+				protected void onPostExecute(RestletObjectA result) {
+					if (result != null) {
+						restlet.setText(result.getName() + ", B : " + result.getObjectB().getName());
+					} else {
+						restlet.setText("Failure during getting result");
+
+					}
+					btnRestlet.setEnabled(true);
+				}
+			}.execute();
 
 			break;
 		}

@@ -4,17 +4,25 @@ xmlns="http://java.sun.com/xml/ns/javaee"
 xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
 http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
-<!--  
-	<servlet>
-		<servlet-name>TestRpcAppEngine</servlet-name>
-		<servlet-class>com.binomed.rpc.TestRpcAppEngineServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>TestRpcAppEngine</servlet-name>
-		<url-pattern>/testrpcappengine/test</url-pattern>
-	</servlet-mapping>
+
+
+	<!-- RESTLET -->
 	
-	-->
+	 <servlet>
+            <servlet-name>RestletServlet</servlet-name>
+            <servlet-class>org.restlet.ext.servlet.ServerServlet</servlet-class>
+            <init-param>
+                    <param-name>org.restlet.application</param-name>
+                    <param-value>com.binomed.server.rest.RestletApplication</param-value>
+            </init-param>
+    </servlet>
+
+	<!-- Catch all requests -->
+	<servlet-mapping>
+		<servlet-name>RestletServlet</servlet-name>
+		<url-pattern>/rest/*</url-pattern>
+	</servlet-mapping>
+
 	
 	<!-- Java-Json-RPC -->
 	
