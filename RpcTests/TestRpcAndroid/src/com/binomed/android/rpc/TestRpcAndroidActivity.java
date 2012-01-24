@@ -24,6 +24,7 @@ import com.binomed.client.IObjectBMap;
 import com.binomed.client.requestfactory.MyRequestFactory;
 import com.binomed.client.requestfactory.MyRequestFactory.HelloWorldRequest;
 import com.binomed.client.requestfactory.shared.RequestFactoryObjectAProxy;
+import com.binomed.client.rpc.javajsonrpc.dto.JavaJsonRpcObjectA;
 import com.binomed.rpc.R;
 import com.google.web.bindery.requestfactory.shared.Receiver;
 import com.google.web.bindery.requestfactory.shared.ServerFailure;
@@ -176,7 +177,10 @@ public class TestRpcAndroidActivity extends TabActivity implements OnClickListen
 
 						@Override
 						public void onSuccess(RequestFactoryObjectAProxy result) {
-							message = result;
+							JavaJsonRpcObjectA objA = new JavaJsonRpcObjectA();
+							objA.setName(result.getName());
+							// message = result;
+							message = objA;
 						}
 					});
 					result = message;
@@ -220,15 +224,17 @@ public class TestRpcAndroidActivity extends TabActivity implements OnClickListen
 				str.append("Time : ").append(String.valueOf(System.currentTimeMillis() - time)).append("ms \n");
 				str.append("Object A : ").append(result.getName()).append("\n");
 				IObjectB objB = result.getObjectB();
-				if (objB instanceof IObjectBMap) {
-					str.append("Object B Map : ").append(objB.getName()).append("\n");
-					if (((IObjectBMap) objB).getMap() != null) {
-						for (Entry<String, String> entry : ((IObjectBMap) objB).getMap().entrySet()) {
-							str.append("-> : Key").append(entry.getKey()).append(" : ").append(entry.getValue()).append("\n");
+				if (objB != null) {
+					if (objB instanceof IObjectBMap) {
+						str.append("Object B Map : ").append(objB.getName()).append("\n");
+						if (((IObjectBMap) objB).getMap() != null) {
+							for (Entry<String, String> entry : ((IObjectBMap) objB).getMap().entrySet()) {
+								str.append("-> : Key").append(entry.getKey()).append(" : ").append(entry.getValue()).append("\n");
+							}
 						}
+					} else {
+						str.append("Object B: ").append(objB.getName()).append("\n");
 					}
-				} else {
-					str.append("Object B: ").append(objB.getName()).append("\n");
 				}
 				if ((result.getListObjectB() == null) || (result.getListObjectB().size() == 0)) {
 					str.append("Nb objects B: ").append(0).append("\n");

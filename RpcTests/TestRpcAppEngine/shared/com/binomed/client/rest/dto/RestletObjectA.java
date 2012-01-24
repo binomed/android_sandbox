@@ -3,9 +3,7 @@ package com.binomed.client.rest.dto;
 import java.io.Serializable;
 import java.util.List;
 
-import com.binomed.client.IObjectA;
-
-public class RestletObjectA implements IObjectA<RestletObjectB>, Serializable {
+public class RestletObjectA implements /* IObjectA<RestletObjectB>, */Serializable {
 
 	/**
 	 * 
@@ -22,32 +20,26 @@ public class RestletObjectA implements IObjectA<RestletObjectB>, Serializable {
 
 	private String name;
 
-	@Override
 	public RestletObjectB getObjectB() {
 		return objectB;
 	}
 
-	@Override
 	public void setObjectB(RestletObjectB objectB) {
 		this.objectB = objectB;
 	}
 
-	@Override
 	public List<RestletObjectB> getListObjectB() {
 		return listObjectB;
 	}
 
-	@Override
 	public void setListObjectB(List<RestletObjectB> listObjectB) {
 		this.listObjectB = listObjectB;
 	}
 
-	@Override
 	public String getName() {
 		return name;
 	}
 
-	@Override
 	public void setName(String name) {
 		this.name = name;
 	}

@@ -1,8 +1,9 @@
 package com.binomed.client;
 
+import java.io.Serializable;
 import java.util.List;
 
-public interface IObjectA<T extends IObjectB> {
+public interface IObjectA<T extends IObjectB> extends Serializable {
 
 	T getObjectB();
 

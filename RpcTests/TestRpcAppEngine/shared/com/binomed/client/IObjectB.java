@@ -1,6 +1,8 @@
 package com.binomed.client;
 
-public interface IObjectB {
+import java.io.Serializable;
+
+public interface IObjectB extends Serializable {
 
 	String getName();
 
