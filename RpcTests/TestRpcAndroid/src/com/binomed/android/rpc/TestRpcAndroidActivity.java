@@ -1,6 +1,8 @@
 package com.binomed.android.rpc;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map.Entry;
 
 import android.app.TabActivity;
@@ -24,7 +26,9 @@ import com.binomed.client.IObjectBMap;
 import com.binomed.client.requestfactory.MyRequestFactory;
 import com.binomed.client.requestfactory.MyRequestFactory.HelloWorldRequest;
 import com.binomed.client.requestfactory.shared.RequestFactoryObjectAProxy;
+import com.binomed.client.requestfactory.shared.RequestFactoryObjectBProxy;
 import com.binomed.client.rpc.javajsonrpc.dto.JavaJsonRpcObjectA;
+import com.binomed.client.rpc.javajsonrpc.dto.JavaJsonRpcObjectB;
 import com.binomed.rpc.R;
 import com.google.web.bindery.requestfactory.shared.Receiver;
 import com.google.web.bindery.requestfactory.shared.ServerFailure;
@@ -160,34 +164,83 @@ public class TestRpcAndroidActivity extends TabActivity implements OnClickListen
 				switch (type) {
 				case JSON_RPC: {
 					JavaJsonRpcServiceProxy proxy = new JavaJsonRpcServiceProxy(new HttpJsonClient(new URL(LOCALHOST + "/jsonrpc/javajsonrpc")));
-					result = proxy.getMessage();
+					if (!withParams) {
+						result = proxy.getMessage();
+					} else {
+						JavaJsonRpcObjectB paramB = new JavaJsonRpcObjectB();
+						paramB.setName("Name From Json RPC");
+						paramB.setMap(new HashMap<String, String>());
+						paramB.getMap().put("key", "value");
+						paramB.setNum(10);
+						result = proxy.getMessageWithParameter(paramB);
+
+					}
 					break;
 				}
 				case REQUEST_FACTORY: {
 					Thread.currentThread().setContextClassLoader(mContext.getClassLoader());
 					MyRequestFactory requestFactory = Util.getRequestFactory(mContext, MyRequestFactory.class);
 					final HelloWorldRequest request = requestFactory.helloWorldRequest();
-					Log.i(TAG, "Sending request to server");
-					request.getMessage().fire(new Receiver<RequestFactoryObjectAProxy>() {
-						@Override
-						public void onFailure(ServerFailure error) {
-							Log.e(TAG, "Failure with request factory request : " + error.getMessage());
-							message = null;
-						}
+					if (!withParams) {
+						request.getMessage().fire(new Receiver<RequestFactoryObjectAProxy>() {
+							@Override
+							public void onFailure(ServerFailure error) {
+								Log.e(TAG, "Failure with request factory request : " + error.getMessage());
+								message = null;
+							}
 
-						@Override
-						public void onSuccess(RequestFactoryObjectAProxy result) {
-							JavaJsonRpcObjectA objA = new JavaJsonRpcObjectA();
-							objA.setName(result.getName());
-							// message = result;
-							message = objA;
-						}
-					});
+							@Override
+							public void onSuccess(RequestFactoryObjectAProxy result) {
+								JavaJsonRpcObjectA objA = new JavaJsonRpcObjectA();
+								objA.setName(result.getName());
+								// message = result;
+								message = objA;
+							}
+						});
+					} else {
+						RequestFactoryObjectBProxy parameterB = request.create(RequestFactoryObjectBProxy.class);
+						parameterB.setName("Name from request factory");
+						request.getMessageWithParameter(parameterB).fire(new Receiver<RequestFactoryObjectAProxy>() {
+							@Override
+							public void onFailure(ServerFailure error) {
+								Log.e(TAG, "Failure with request factory request : " + error.getMessage());
+								message = null;
+							}
+
+							@Override
+							public void onSuccess(RequestFactoryObjectAProxy result) {
+								JavaJsonRpcObjectA objA = new JavaJsonRpcObjectA();
+								objA.setName(result.getName());
+								if (result.getObjectB() != null) {
+									JavaJsonRpcObjectB objB = new JavaJsonRpcObjectB();
+									objB.setName(result.getObjectB().getName());
+								}
+								if ((result.getListObjectB() != null) && (result.getListObjectB().size() > 0)) {
+									JavaJsonRpcObjectB objB = null;
+									objA.setListObjectB(new ArrayList<JavaJsonRpcObjectB>());
+									for (RequestFactoryObjectBProxy objBProxy : result.getListObjectB()) {
+										objB = new JavaJsonRpcObjectB();
+										objB.setName(objBProxy.getName());
+										objA.getListObjectB().add(objB);
+									}
+
+								}
+
+								// message = result;
+								message = objA;
+							}
+						});
+					}
 					result = message;
 					break;
 				}
 				case REST: {
-					result = RestletAccesClass.callService();
+					if (!withParams) {
+						result = RestletAccesClass.callService();
+					} else {
+						result = RestletAccesClass.callServiceWithParam();
+
+					}
 					break;
 				}
 				default:

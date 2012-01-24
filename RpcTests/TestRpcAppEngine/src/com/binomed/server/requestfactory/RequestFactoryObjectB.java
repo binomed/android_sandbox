@@ -7,6 +7,7 @@ public class RequestFactoryObjectB {
 	}
 
 	private String name;
+	private int num;
 
 	public String getName() {
 		return name;
@@ -14,6 +15,14 @@ public class RequestFactoryObjectB {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public int getNum() {
+		return num;
+	}
+
+	public void setNum(int num) {
+		this.num = num;
 	}
 
 }

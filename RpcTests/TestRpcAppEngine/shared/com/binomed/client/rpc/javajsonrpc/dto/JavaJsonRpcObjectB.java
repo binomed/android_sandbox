@@ -11,6 +11,7 @@ public class JavaJsonRpcObjectB implements IObjectBMap {
 	}
 
 	private String name;
+	private int num;
 
 	private HashMap<String, String> map;
 
@@ -32,6 +33,17 @@ public class JavaJsonRpcObjectB implements IObjectBMap {
 	@Override
 	public void setMap(HashMap<String, String> map) {
 		this.map = map;
+	}
+
+	@Override
+	public int getNum() {
+		return num;
+	}
+
+	@Override
+	public void setNum(int num) {
+		this.num = num;
+
 	}
 
 }

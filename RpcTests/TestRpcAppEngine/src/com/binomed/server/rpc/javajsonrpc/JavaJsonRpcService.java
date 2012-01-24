@@ -35,6 +35,13 @@ public class JavaJsonRpcService implements IJavaJsonRpcService {
 		result.setName("WithParameter");
 		result.setObjectB(parameter);
 
+		if ((parameter != null) && (parameter.getNum() > 0)) {
+			result.setListObjectB(new ArrayList<JavaJsonRpcObjectB>());
+			for (int i = 0; i < parameter.getNum(); i++) {
+				result.getListObjectB().add(parameter);
+			}
+		}
+
 		return result;
 	}
 

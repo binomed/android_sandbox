@@ -185,3 +185,9 @@
 /RpcTests/TestRpcAppEngine/war/WEB-INF/classes/com/binomed/server/requestfactory/TestRpcAppEngine.gwt.xml
 /RpcTests/TestRpcAppEngine/war/WEB-INF/classes/com/binomed/server/rpc/javajsonrpc/JavaJsonRpcService.class
 /RpcTests/TestRpcAndroid/bin/classes/com/binomed/.gitignore
+/RpcTests/TestRpcAppEngine/gwt-unitCache/gwt-unitCache-000001350C911107
+/RpcTests/TestRpcAppEngine/gwt-unitCache/gwt-unitCache-000001350CAE15F2
+/RpcTests/TestRpcAppEngine/.gwt/.gwt-log
+/RpcTests/TestRpcAppEngine/gwt-unitCache/gwt-unitCache-00000135117062C0
+/RpcTests/TestRpcAppEngine/gwt-unitCache/gwt-unitCache-00000135119084B8
+/RpcTests/TestRpcAppEngine/gwt-unitCache/gwt-unitCache-00000135119E038D

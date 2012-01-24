@@ -10,4 +10,8 @@ public interface RequestFactoryObjectBProxy extends ValueProxy {
 
 	void setName(String name);
 
+	int getNum();
+
+	void setNum(int num);
+
 }

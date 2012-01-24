@@ -8,4 +8,8 @@ public interface IObjectB extends Serializable {
 
 	void setName(String name);
 
+	int getNum();
+
+	void setNum(int num);
+
 }

@@ -3,7 +3,9 @@ package com.binomed.client.rest.dto;
 import java.io.Serializable;
 import java.util.List;
 
-public class RestletObjectA implements /* IObjectA<RestletObjectB>, */Serializable {
+import com.binomed.client.IObjectA;
+
+public class RestletObjectA implements IObjectA<RestletObjectB>, Serializable {
 
 	/**
 	 * 

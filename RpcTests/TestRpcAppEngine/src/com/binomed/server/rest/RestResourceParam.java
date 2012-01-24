@@ -1,5 +1,7 @@
 package com.binomed.server.rest;
 
+import java.util.ArrayList;
+
 import org.restlet.resource.Get;
 import org.restlet.resource.ServerResource;
 
@@ -13,6 +15,13 @@ public class RestResourceParam extends ServerResource {
 		RestletObjectA result = new RestletObjectA();
 		result.setName("WithParameter");
 		result.setObjectB(parameter);
+
+		if ((parameter != null) && (parameter.getNum() > 0)) {
+			result.setListObjectB(new ArrayList<RestletObjectB>());
+			for (int i = 0; i < parameter.getNum(); i++) {
+				result.getListObjectB().add(parameter);
+			}
+		}
 
 		return result;
 	}

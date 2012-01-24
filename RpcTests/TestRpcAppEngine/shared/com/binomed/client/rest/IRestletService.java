@@ -10,7 +10,7 @@ public interface IRestletService {
 	@Get
 	RestletObjectA getMessage() throws Exception;
 
-	@Get(value = "parameter")
+	@Get
 	RestletObjectA getMessageWithParameter(RestletObjectB parameter) throws Exception;
 
 }
