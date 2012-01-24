@@ -19,6 +19,8 @@ public class RestletApplication extends Application {
 		// router.attachDefault(new Directory(getContext(), "war:///"));
 		// router.attach("/test/", RestResource.class);
 		router.attachDefault(RestResource.class);
+		router.attach("/test/", RestResource.class);
+		router.attach("/testParam/", RestResourceParam.class);
 
 		return router;
 	}

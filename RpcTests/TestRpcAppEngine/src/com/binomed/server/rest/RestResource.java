@@ -6,13 +6,11 @@ import java.util.HashMap;
 import org.restlet.resource.Get;
 import org.restlet.resource.ServerResource;
 
-import com.binomed.client.rest.IRestletService;
 import com.binomed.client.rest.dto.RestletObjectA;
 import com.binomed.client.rest.dto.RestletObjectB;
 
-public class RestResource extends ServerResource implements IRestletService {
+public class RestResource extends ServerResource {
 
-	@Override
 	@Get
 	public RestletObjectA getMessage() throws Exception {
 		RestletObjectB objB = new RestletObjectB();
@@ -25,16 +23,6 @@ public class RestResource extends ServerResource implements IRestletService {
 		result.setListObjectB(new ArrayList<RestletObjectB>());
 		result.getListObjectB().add(objB);
 		result.setObjectB(objB);
-
-		return result;
-	}
-
-	@Override
-	@Get(value = "parameter")
-	public RestletObjectA getMessageWithParameter(RestletObjectB parameter) throws Exception {
-		RestletObjectA result = new RestletObjectA();
-		result.setName("WithParameter");
-		result.setObjectB(parameter);
 
 		return result;
 	}
