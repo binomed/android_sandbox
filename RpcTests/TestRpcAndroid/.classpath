@@ -7,7 +7,6 @@
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="lib" path="lib/requestfactory-client.jar"/>
 	<classpathentry kind="lib" path="lib/validation-api-1.0.0.GA.jar"/>
-	<classpathentry kind="lib" path="lib/android-json-rpc-0.2.jar"/>
 	<classpathentry kind="src" path=".apt_generated">
 		<attributes>
 			<attribute name="optional" value="true"/>
@@ -15,7 +14,6 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="lib/jackson-all-1.9.3.jar"/>
 	<classpathentry kind="lib" path="lib/java-json-rpc.REV6.jar"/>
-	<classpathentry kind="lib" path="lib/jsonrpc4j-0.18.jar"/>
 	<classpathentry kind="lib" path="lib/log4j-1.2.16.jar"/>
 	<classpathentry kind="lib" path="lib/org.restlet.ext.jackson.jar"/>
 	<classpathentry kind="lib" path="lib/org.restlet.jar"/>
