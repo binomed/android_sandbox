@@ -43,6 +43,7 @@ public class TestRpcAndroidActivity extends TabActivity implements OnClickListen
 	private static final String TAG = "TestAndroidActivity";
 
 	private EditText requestFactory, jsonRpc, restlet;
+	private EditText nbParamRequestFactory, nbParamJsonRpc, nbParamRestlet;
 	private Button btnRequestFactory, btnJsonRpc, btnRestlet, btnRequestFactoryParams, btnJsonRpcParams, btnRestletParams;
 	private Context mContext;
 
@@ -87,12 +88,15 @@ public class TestRpcAndroidActivity extends TabActivity implements OnClickListen
 		tabHost.addTab(restTab); // Adding videos tab
 
 		requestFactory = (EditText) findViewById(R.id.requestFactory);
+		nbParamRequestFactory = (EditText) findViewById(R.id.nbParamRequestFactory);
 		btnRequestFactory = (Button) findViewById(R.id.btnRequestFactory);
 		btnRequestFactoryParams = (Button) findViewById(R.id.btnRequestFactoryParams);
 		jsonRpc = (EditText) findViewById(R.id.jsonRpc);
+		nbParamJsonRpc = (EditText) findViewById(R.id.nbParamJsonRpc);
 		btnJsonRpc = (Button) findViewById(R.id.btnJsonRpc);
 		btnJsonRpcParams = (Button) findViewById(R.id.btnJsonParams);
 		restlet = (EditText) findViewById(R.id.rest);
+		nbParamRestlet = (EditText) findViewById(R.id.nbParamRest);
 		btnRestlet = (Button) findViewById(R.id.btnRest);
 		btnRestletParams = (Button) findViewById(R.id.btnRestParams);
 
@@ -109,27 +113,27 @@ public class TestRpcAndroidActivity extends TabActivity implements OnClickListen
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.btnJsonRpc: {
-			new TaskTest(jsonRpc, btnJsonRpc, JSON_RPC, false).execute();
+			new TaskTest(jsonRpc, btnJsonRpc, JSON_RPC, -1).execute();
 			break;
 		}
 		case R.id.btnJsonParams: {
-			new TaskTest(jsonRpc, btnJsonRpcParams, JSON_RPC, true).execute();
+			new TaskTest(jsonRpc, btnJsonRpcParams, JSON_RPC, Integer.valueOf(nbParamJsonRpc.getText().toString())).execute();
 			break;
 		}
 		case R.id.btnRequestFactory: {
-			new TaskTest(requestFactory, btnRequestFactory, REQUEST_FACTORY, false).execute();
+			new TaskTest(requestFactory, btnRequestFactory, REQUEST_FACTORY, -1).execute();
 			break;
 		}
 		case R.id.btnRequestFactoryParams: {
-			new TaskTest(requestFactory, btnRequestFactoryParams, REQUEST_FACTORY, true).execute();
+			new TaskTest(requestFactory, btnRequestFactoryParams, REQUEST_FACTORY, Integer.valueOf(nbParamRequestFactory.getText().toString())).execute();
 			break;
 		}
 		case R.id.btnRest: {
-			new TaskTest(restlet, btnRestlet, REST, false).execute();
+			new TaskTest(restlet, btnRestlet, REST, -1).execute();
 			break;
 		}
 		case R.id.btnRestParams: {
-			new TaskTest(restlet, btnRestletParams, REST, true).execute();
+			new TaskTest(restlet, btnRestletParams, REST, Integer.valueOf(nbParamRestlet.getText().toString())).execute();
 			break;
 		}
 		default:
@@ -143,15 +147,15 @@ public class TestRpcAndroidActivity extends TabActivity implements OnClickListen
 		private EditText text;
 		private Button btn;
 		private int type;
-		private boolean withParams;
+		private int nbParams;
 		private IObjectA<? extends IObjectB> message;
 		private long time;
 
-		public TaskTest(EditText text, Button btn, int type, boolean params) {
+		public TaskTest(EditText text, Button btn, int type, int nbParams) {
 			this.text = text;
 			this.btn = btn;
 			this.type = type;
-			this.withParams = params;
+			this.nbParams = nbParams;
 			btn.setEnabled(false);
 			text.setText("contacting server");
 		}
@@ -164,14 +168,14 @@ public class TestRpcAndroidActivity extends TabActivity implements OnClickListen
 				switch (type) {
 				case JSON_RPC: {
 					JavaJsonRpcServiceProxy proxy = new JavaJsonRpcServiceProxy(new HttpJsonClient(new URL(LOCALHOST + "/jsonrpc/javajsonrpc")));
-					if (!withParams) {
+					if (nbParams == -1) {
 						result = proxy.getMessage();
 					} else {
 						JavaJsonRpcObjectB paramB = new JavaJsonRpcObjectB();
 						paramB.setName("Name From Json RPC");
 						paramB.setMap(new HashMap<String, String>());
 						paramB.getMap().put("key", "value");
-						paramB.setNum(10);
+						paramB.setNum(nbParams);
 						result = proxy.getMessageWithParameter(paramB);
 
 					}
@@ -181,7 +185,7 @@ public class TestRpcAndroidActivity extends TabActivity implements OnClickListen
 					Thread.currentThread().setContextClassLoader(mContext.getClassLoader());
 					MyRequestFactory requestFactory = Util.getRequestFactory(mContext, MyRequestFactory.class);
 					final HelloWorldRequest request = requestFactory.helloWorldRequest();
-					if (!withParams) {
+					if (nbParams == -1) {
 						request.getMessage().fire(new Receiver<RequestFactoryObjectAProxy>() {
 							@Override
 							public void onFailure(ServerFailure error) {
@@ -193,6 +197,21 @@ public class TestRpcAndroidActivity extends TabActivity implements OnClickListen
 							public void onSuccess(RequestFactoryObjectAProxy result) {
 								JavaJsonRpcObjectA objA = new JavaJsonRpcObjectA();
 								objA.setName(result.getName());
+								if (result.getObjectB() != null) {
+									JavaJsonRpcObjectB objB = new JavaJsonRpcObjectB();
+									objB.setName(result.getObjectB().getName());
+								}
+								if ((result.getListObjectB() != null) && (result.getListObjectB().size() > 0)) {
+									JavaJsonRpcObjectB objB = null;
+									objA.setListObjectB(new ArrayList<JavaJsonRpcObjectB>());
+									for (RequestFactoryObjectBProxy objBProxy : result.getListObjectB()) {
+										objB = new JavaJsonRpcObjectB();
+										objB.setName(objBProxy.getName());
+										objA.getListObjectB().add(objB);
+									}
+
+								}
+
 								// message = result;
 								message = objA;
 							}
@@ -200,7 +219,8 @@ public class TestRpcAndroidActivity extends TabActivity implements OnClickListen
 					} else {
 						RequestFactoryObjectBProxy parameterB = request.create(RequestFactoryObjectBProxy.class);
 						parameterB.setName("Name from request factory");
-						request.getMessageWithParameter(parameterB).fire(new Receiver<RequestFactoryObjectAProxy>() {
+						parameterB.setNum(nbParams);
+						request.getMessageWithParameter().using(parameterB).fire(new Receiver<RequestFactoryObjectAProxy>() {
 							@Override
 							public void onFailure(ServerFailure error) {
 								Log.e(TAG, "Failure with request factory request : " + error.getMessage());
@@ -235,10 +255,10 @@ public class TestRpcAndroidActivity extends TabActivity implements OnClickListen
 					break;
 				}
 				case REST: {
-					if (!withParams) {
+					if (nbParams == -1) {
 						result = RestletAccesClass.callService();
 					} else {
-						result = RestletAccesClass.callServiceWithParam();
+						result = RestletAccesClass.callServiceWithParam(nbParams);
 
 					}
 					break;

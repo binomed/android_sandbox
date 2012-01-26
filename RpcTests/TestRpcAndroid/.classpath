@@ -12,7 +12,6 @@
 			<attribute name="optional" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/jackson-all-1.9.3.jar"/>
 	<classpathentry kind="lib" path="lib/java-json-rpc.REV6.jar"/>
 	<classpathentry kind="lib" path="lib/log4j-1.2.16.jar"/>
 	<classpathentry kind="lib" path="lib/org.restlet.ext.jackson.jar"/>
@@ -24,5 +23,7 @@
 	<classpathentry kind="lib" path="lib/org.apache.httpcore.jar"/>
 	<classpathentry kind="lib" path="lib/org.apache.httpmime.jar"/>
 	<classpathentry kind="lib" path="lib/org.apache.james.mime4j.jar"/>
+	<classpathentry kind="lib" path="lib/org.codehaus.jackson.core.jar"/>
+	<classpathentry kind="lib" path="lib/org.codehaus.jackson.mapper.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

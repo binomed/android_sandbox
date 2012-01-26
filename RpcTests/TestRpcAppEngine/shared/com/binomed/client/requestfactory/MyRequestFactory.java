@@ -16,6 +16,7 @@ package com.binomed.client.requestfactory;
 
 import com.binomed.client.requestfactory.shared.RequestFactoryObjectAProxy;
 import com.binomed.client.requestfactory.shared.RequestFactoryObjectBProxy;
+import com.google.web.bindery.requestfactory.shared.InstanceRequest;
 import com.google.web.bindery.requestfactory.shared.Request;
 import com.google.web.bindery.requestfactory.shared.RequestContext;
 import com.google.web.bindery.requestfactory.shared.RequestFactory;
@@ -23,14 +24,14 @@ import com.google.web.bindery.requestfactory.shared.ServiceName;
 
 public interface MyRequestFactory extends RequestFactory {
 
-	@ServiceName("com.binomed.server.requestfactory.HelloWorldService")
+	@ServiceName("com.binomed.server.requestfactory.RequestFactoryObjectB")
 	public interface HelloWorldRequest extends RequestContext {
 		/**
 		 * Retrieve a "Hello, World" message from the server.
 		 */
 		Request<RequestFactoryObjectAProxy> getMessage();
 
-		Request<RequestFactoryObjectAProxy> getMessageWithParameter(RequestFactoryObjectBProxy parameter);
+		InstanceRequest<RequestFactoryObjectBProxy, RequestFactoryObjectAProxy> getMessageWithParameter();
 
 	}
 

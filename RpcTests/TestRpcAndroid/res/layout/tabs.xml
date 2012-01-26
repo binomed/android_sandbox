@@ -30,9 +30,17 @@
 			        android:id="@+id/btnJsonParams"
 			        android:layout_width="wrap_content"
 			        android:layout_height="wrap_content"
-			        android:layout_alignParentRight="true"
 			        android:layout_toRightOf="@+id/btnJsonRpc"
 			        android:text="With Parameters" />
+			     <EditText 
+			        android:id="@+id/nbParamJsonRpc"
+			        android:layout_width="70dp"
+			        android:layout_height="wrap_content"
+			        android:layout_alignParentRight="true"
+			        android:layout_toRightOf="@+id/btnJsonParams"
+			        android:numeric="integer"
+			        android:text="10"
+			        />
 			    <EditText
 			        android:id="@+id/jsonRpc"
 			        android:layout_width="fill_parent"
@@ -56,9 +64,17 @@
 			        android:id="@+id/btnRequestFactoryParams"
 			        android:layout_width="wrap_content"
 			        android:layout_height="wrap_content"
-			        android:layout_alignParentRight="true"
 			        android:layout_toRightOf="@+id/btnRequestFactory"
 			        android:text="With Parameters" />
+			     <EditText 
+			        android:id="@+id/nbParamRequestFactory"
+			        android:layout_width="70dp"
+			        android:layout_height="wrap_content"
+			        android:layout_alignParentRight="true"
+			        android:layout_toRightOf="@+id/btnRequestFactoryParams"
+			        android:numeric="integer"
+			        android:text="10"
+			        />
 			    <EditText
 			        android:id="@+id/requestFactory"
 			        android:layout_width="fill_parent"
@@ -81,9 +97,17 @@
 			        android:id="@+id/btnRestParams"
 			        android:layout_width="wrap_content"
 			        android:layout_height="wrap_content"
-			        android:layout_alignParentRight="true"
 			        android:layout_toRightOf="@+id/btnRest"
 			        android:text="With Parameters" />
+			     <EditText 
+			        android:id="@+id/nbParamRest"
+			        android:layout_width="70dp"
+			        android:layout_height="wrap_content"
+			        android:layout_alignParentRight="true"
+			        android:layout_toRightOf="@+id/btnRestParams"
+			        android:numeric="integer"
+			        android:text="10"
+			        />
 			    <EditText
 			        android:id="@+id/rest"
 			        android:layout_width="fill_parent"

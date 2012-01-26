@@ -13,10 +13,10 @@ withOperation(new OperationKey("rKhXmHgs8UJ9mZV82Ch6coBcx84="),
   .withMethodName("getMessage")
   .withRequestContext("com.binomed.client.requestfactory.MyRequestFactory$HelloWorldRequest")
   .build());
-withOperation(new OperationKey("m5ol$9B_jGw3tbTAttdYFHSO0j0="),
+withOperation(new OperationKey("LRXTtOrUKjsdE$0g5aPo4T076cA="),
   new OperationData.Builder()
-  .withClientMethodDescriptor("(Lcom/binomed/client/requestfactory/shared/RequestFactoryObjectBProxy;)Lcom/google/web/bindery/requestfactory/shared/Request;")
-  .withDomainMethodDescriptor("(Lcom/binomed/server/requestfactory/RequestFactoryObjectB;)Lcom/binomed/server/requestfactory/RequestFactoryObjectA;")
+  .withClientMethodDescriptor("()Lcom/google/web/bindery/requestfactory/shared/InstanceRequest;")
+  .withDomainMethodDescriptor("()Lcom/binomed/server/requestfactory/RequestFactoryObjectA;")
   .withMethodName("getMessageWithParameter")
   .withRequestContext("com.binomed.client.requestfactory.MyRequestFactory$HelloWorldRequest")
   .build());
