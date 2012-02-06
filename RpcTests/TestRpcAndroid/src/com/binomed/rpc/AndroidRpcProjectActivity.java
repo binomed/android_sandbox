@@ -1,4 +1,4 @@
-package com.binomed.android.rpc;
+package com.binomed.rpc;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -17,9 +17,6 @@ import android.widget.EditText;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
 
-import com.binomed.android.rpc.javajsonrpc.JavaJsonRpcServiceProxy;
-import com.binomed.android.rpc.requestFactory.Util;
-import com.binomed.android.rpc.rest.RestletAccesClass;
 import com.binomed.client.IObjectA;
 import com.binomed.client.IObjectB;
 import com.binomed.client.IObjectBMap;
@@ -30,12 +27,15 @@ import com.binomed.client.requestfactory.shared.RequestFactoryObjectBProxy;
 import com.binomed.client.rpc.javajsonrpc.dto.JavaJsonRpcObjectA;
 import com.binomed.client.rpc.javajsonrpc.dto.JavaJsonRpcObjectB;
 import com.binomed.rpc.R;
+import com.binomed.rpc.javajsonrpc.JavaJsonRpcServiceProxy;
+import com.binomed.rpc.requestFactory.Util;
+import com.binomed.rpc.rest.RestletAccesClass;
 import com.google.web.bindery.requestfactory.shared.Receiver;
 import com.google.web.bindery.requestfactory.shared.ServerFailure;
 
 import cz.eman.jsonrpc.client.HttpJsonClient;
 
-public class TestRpcAndroidActivity extends TabActivity implements OnClickListener {
+public class AndroidRpcProjectActivity extends TabActivity implements OnClickListener {
 
 	/** Called when the activity is first created. */
 

@@ -1,4 +1,4 @@
-package com.binomed.android.rpc.rest;
+package com.binomed.rpc.rest;
 
 import java.util.HashMap;
 
@@ -7,11 +7,11 @@ import org.restlet.ext.httpclient.HttpClientHelper;
 import org.restlet.ext.jackson.JacksonConverter;
 import org.restlet.resource.ClientResource;
 
-import com.binomed.android.rpc.TestRpcAndroidActivity;
 import com.binomed.client.rest.IRestletService;
 import com.binomed.client.rest.IRestletServiceParam;
 import com.binomed.client.rest.dto.RestletObjectA;
 import com.binomed.client.rest.dto.RestletObjectB;
+import com.binomed.rpc.AndroidRpcProjectActivity;
 
 public class RestletAccesClass {
 
@@ -25,8 +25,8 @@ public class RestletAccesClass {
 			Engine.getInstance().getRegisteredConverters().add(new JacksonConverter());
 			Engine.getInstance().getRegisteredClients().clear();
 			Engine.getInstance().getRegisteredClients().add(new HttpClientHelper(null));
-			resource = new ClientResource(TestRpcAndroidActivity.LOCALHOST + "/rest/test");
-			resourceWithParam = new ClientResource(TestRpcAndroidActivity.LOCALHOST + "/rest/testParam");
+			resource = new ClientResource(AndroidRpcProjectActivity.LOCALHOST + "/rest/test");
+			resourceWithParam = new ClientResource(AndroidRpcProjectActivity.LOCALHOST + "/rest/testParam");
 			resourceWithParam.setRequestEntityBuffering(true);
 			service = resource.wrap(IRestletService.class);
 			serviceWithParam = resourceWithParam.wrap(IRestletServiceParam.class);

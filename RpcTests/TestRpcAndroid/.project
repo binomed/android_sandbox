@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>TestRpcAndroid</name>
+	<name>AndroidRpcProject</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -34,7 +34,7 @@
 		<link>
 			<name>shared</name>
 			<type>2</type>
-			<location>F:/tools/projects/binomed-git/android_sandbox/RpcTests/TestRpcAppEngine/shared</location>
+			<location>D:/zjgarrea/tools/projets/android_sandbox/RpcTests/TestRpcAppEngine/shared</location>
 		</link>
 	</linkedResources>
 </projectDescription>

@@ -1,4 +1,4 @@
-package com.binomed.android.rpc.javajsonrpc;
+package com.binomed.rpc.javajsonrpc;
 
 import java.io.IOException;
 
