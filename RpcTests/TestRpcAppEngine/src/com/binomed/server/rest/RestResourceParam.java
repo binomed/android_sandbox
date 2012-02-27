@@ -8,8 +8,19 @@ import org.restlet.resource.ServerResource;
 import com.binomed.client.rest.dto.RestletObjectA;
 import com.binomed.client.rest.dto.RestletObjectB;
 
+/**
+ * Implementation of rest service with param
+ * 
+ * @author jefBinomed
+ * 
+ */
 public class RestResourceParam extends ServerResource {
 
+	/**
+	 * @param parameter
+	 * @return
+	 * @throws Exception
+	 */
 	@Post
 	public RestletObjectA getMessageWithParameter(RestletObjectB parameter) throws Exception {
 		RestletObjectA result = new RestletObjectA();

@@ -9,8 +9,20 @@ import org.restlet.resource.ServerResource;
 import com.binomed.client.rest.dto.RestletObjectA;
 import com.binomed.client.rest.dto.RestletObjectB;
 
+/**
+ * 
+ * Implementation of rest service without param
+ * 
+ * @author jefBinomed
+ * 
+ */
 public class RestResource extends ServerResource {
 
+	/**
+	 * 
+	 * @return
+	 * @throws Exception
+	 */
 	@Get
 	public RestletObjectA getMessage() throws Exception {
 		RestletObjectB objB = new RestletObjectB();

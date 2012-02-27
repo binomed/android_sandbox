@@ -14,6 +14,7 @@
  *******************************************************************************/
 package com.binomed.client.requestfactory;
 
+import com.binomed.client.IObjectA;
 import com.binomed.client.requestfactory.shared.RequestFactoryObjectAProxy;
 import com.binomed.client.requestfactory.shared.RequestFactoryObjectBProxy;
 import com.google.web.bindery.requestfactory.shared.InstanceRequest;
@@ -22,19 +23,44 @@ import com.google.web.bindery.requestfactory.shared.RequestContext;
 import com.google.web.bindery.requestfactory.shared.RequestFactory;
 import com.google.web.bindery.requestfactory.shared.ServiceName;
 
+/**
+ * Instance of Request Factory
+ * 
+ * @author jefBinomed
+ * 
+ */
 public interface MyRequestFactory extends RequestFactory {
 
+	/**
+	 * Service exposed to client
+	 * 
+	 * @author jefBinomed
+	 * 
+	 */
 	@ServiceName("com.binomed.server.requestfactory.RequestFactoryObjectB")
 	public interface HelloWorldRequest extends RequestContext {
+
 		/**
-		 * Retrieve a "Hello, World" message from the server.
+		 * Returns a {@link IObjectA} without param
+		 * 
+		 * @return
 		 */
 		Request<RequestFactoryObjectAProxy> getMessage();
 
+		/**
+		 * Returns a {@link IObjectA} with param
+		 * 
+		 * @return
+		 */
 		InstanceRequest<RequestFactoryObjectBProxy, RequestFactoryObjectAProxy> getMessageWithParameter();
 
 	}
 
+	/**
+	 * Get the service to expose
+	 * 
+	 * @return
+	 */
 	HelloWorldRequest helloWorldRequest();
 
 }

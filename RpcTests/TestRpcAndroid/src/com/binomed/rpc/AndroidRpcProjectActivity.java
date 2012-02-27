@@ -26,7 +26,6 @@ import com.binomed.client.requestfactory.shared.RequestFactoryObjectAProxy;
 import com.binomed.client.requestfactory.shared.RequestFactoryObjectBProxy;
 import com.binomed.client.rpc.javajsonrpc.dto.JavaJsonRpcObjectA;
 import com.binomed.client.rpc.javajsonrpc.dto.JavaJsonRpcObjectB;
-import com.binomed.rpc.R;
 import com.binomed.rpc.javajsonrpc.JavaJsonRpcServiceProxy;
 import com.binomed.rpc.requestFactory.Util;
 import com.binomed.rpc.rest.RestletAccesClass;
@@ -35,28 +34,57 @@ import com.google.web.bindery.requestfactory.shared.ServerFailure;
 
 import cz.eman.jsonrpc.client.HttpJsonClient;
 
+/**
+ * Main Activity Class
+ * 
+ * @author jefBinomed
+ * 
+ */
 public class AndroidRpcProjectActivity extends TabActivity implements OnClickListener {
 
-	/** Called when the activity is first created. */
-
+	/**
+	 * Url for localhost in android
+	 */
 	public static final String LOCALHOST = "http://10.0.2.2:8888"; //$NON-NLS-1$
-	private static final String TAG = "TestAndroidActivity";
+	private static final String TAG = "AndroidRpcProjectActivity";
 
+	/**
+	 * Text zone for recepting server responses
+	 */
 	private EditText requestFactory, jsonRpc, restlet;
+	/**
+	 * Text zone for specifying the number of objects expected
+	 */
 	private EditText nbParamRequestFactory, nbParamJsonRpc, nbParamRestlet;
+	/**
+	 * Buttons for launching the services
+	 */
 	private Button btnRequestFactory, btnJsonRpc, btnRestlet, btnRequestFactoryParams, btnJsonRpcParams, btnRestletParams;
 	private Context mContext;
 
+	/*
+	 * Types for abastract class AsyncTask
+	 */
 	private static final int JSON_RPC = 1;
 	private static final int REQUEST_FACTORY = 2;
 	private static final int REST = 3;
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see android.app.ActivityGroup#onCreate(android.os.Bundle)
+	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see android.app.ActivityGroup#onResume()
+	 */
 	@Override
 	protected void onResume() {
 		super.onResume();
@@ -83,10 +111,13 @@ public class AndroidRpcProjectActivity extends TabActivity implements OnClickLis
 		restTab.setContent(R.id.restLayout);
 
 		// Adding all TabSpec to TabHost
-		tabHost.addTab(jsonRpcTab); // Adding photos tab
-		tabHost.addTab(requestFactoryTab); // Adding songs tab
-		tabHost.addTab(restTab); // Adding videos tab
+		tabHost.addTab(jsonRpcTab); // Adding jsonRpc tab
+		tabHost.addTab(requestFactoryTab); // Adding request factory tab
+		tabHost.addTab(restTab); // Adding rest tab
 
+		/*
+		 * Map the xml with fields
+		 */
 		requestFactory = (EditText) findViewById(R.id.requestFactory);
 		nbParamRequestFactory = (EditText) findViewById(R.id.nbParamRequestFactory);
 		btnRequestFactory = (Button) findViewById(R.id.btnRequestFactory);
@@ -100,6 +131,7 @@ public class AndroidRpcProjectActivity extends TabActivity implements OnClickLis
 		btnRestlet = (Button) findViewById(R.id.btnRest);
 		btnRestletParams = (Button) findViewById(R.id.btnRestParams);
 
+		// Add the listeners
 		btnRequestFactory.setOnClickListener(this);
 		btnRequestFactoryParams.setOnClickListener(this);
 		btnJsonRpc.setOnClickListener(this);
@@ -109,8 +141,14 @@ public class AndroidRpcProjectActivity extends TabActivity implements OnClickLis
 
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see android.view.View.OnClickListener#onClick(android.view.View)
+	 */
 	@Override
 	public void onClick(View v) {
+		// We just launch an instance of TaskTest (an async task)
 		switch (v.getId()) {
 		case R.id.btnJsonRpc: {
 			new TaskTest(jsonRpc, btnJsonRpc, JSON_RPC, -1).execute();
@@ -142,13 +180,37 @@ public class AndroidRpcProjectActivity extends TabActivity implements OnClickLis
 
 	}
 
+	/**
+	 * The asynTask use for the call of server
+	 * 
+	 * @author jefBinomed
+	 * 
+	 */
 	class TaskTest extends AsyncTask<Void, Void, IObjectA<? extends IObjectB>> {
 
+		/**
+		 * The output text
+		 */
 		private EditText text;
+		/**
+		 * The boutton wich launch the task
+		 */
 		private Button btn;
+		/**
+		 * The type (Rest, json, request factory)
+		 */
 		private int type;
+		/**
+		 * The number of expected beans in result
+		 */
 		private int nbParams;
+		/**
+		 * Use only for requestFactory
+		 */
 		private IObjectA<? extends IObjectB> message;
+		/**
+		 * The time of call of service
+		 */
 		private long time;
 
 		public TaskTest(EditText text, Button btn, int type, int nbParams) {
@@ -160,6 +222,11 @@ public class AndroidRpcProjectActivity extends TabActivity implements OnClickLis
 			text.setText("contacting server");
 		}
 
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see android.os.AsyncTask#doInBackground(Params[])
+		 */
 		@Override
 		protected IObjectA<? extends IObjectB> doInBackground(Void... params) {
 			time = System.currentTimeMillis();
@@ -167,6 +234,7 @@ public class AndroidRpcProjectActivity extends TabActivity implements OnClickLis
 				IObjectA<? extends IObjectB> result = null;
 				switch (type) {
 				case JSON_RPC: {
+					// We instanciate the proxy JSON and call the correct service
 					JavaJsonRpcServiceProxy proxy = new JavaJsonRpcServiceProxy(new HttpJsonClient(new URL(LOCALHOST + "/jsonrpc/javajsonrpc")));
 					if (nbParams == -1) {
 						result = proxy.getMessage();
@@ -182,6 +250,9 @@ public class AndroidRpcProjectActivity extends TabActivity implements OnClickLis
 					break;
 				}
 				case REQUEST_FACTORY: {
+					// We get the proxy and call the correct method with a CallBack mecanism
+
+					// The classes used were taken from generation of code done by the plugin Android AppEngine
 					Thread.currentThread().setContextClassLoader(mContext.getClassLoader());
 					MyRequestFactory requestFactory = Util.getRequestFactory(mContext, MyRequestFactory.class);
 					final HelloWorldRequest request = requestFactory.helloWorldRequest();
@@ -211,8 +282,6 @@ public class AndroidRpcProjectActivity extends TabActivity implements OnClickLis
 									}
 
 								}
-
-								// message = result;
 								message = objA;
 							}
 						});
@@ -229,6 +298,7 @@ public class AndroidRpcProjectActivity extends TabActivity implements OnClickLis
 
 							@Override
 							public void onSuccess(RequestFactoryObjectAProxy result) {
+								// We have to convert the beans into an implementation of interface in order to manage automatic show in the text result zone.
 								JavaJsonRpcObjectA objA = new JavaJsonRpcObjectA();
 								objA.setName(result.getName());
 								if (result.getObjectB() != null) {
@@ -246,7 +316,6 @@ public class AndroidRpcProjectActivity extends TabActivity implements OnClickLis
 
 								}
 
-								// message = result;
 								message = objA;
 							}
 						});
@@ -255,6 +324,7 @@ public class AndroidRpcProjectActivity extends TabActivity implements OnClickLis
 					break;
 				}
 				case REST: {
+					// We just call the correct service
 					if (nbParams == -1) {
 						result = RestletAccesClass.callService();
 					} else {
@@ -274,6 +344,11 @@ public class AndroidRpcProjectActivity extends TabActivity implements OnClickLis
 			}
 		}
 
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
+		 */
 		@Override
 		protected void onPostExecute(IObjectA<? extends IObjectB> result) {
 			String typeName = null;
@@ -291,6 +366,7 @@ public class AndroidRpcProjectActivity extends TabActivity implements OnClickLis
 			default:
 				break;
 			}
+			// We finally show the results
 			if (result != null) {
 				StringBuilder str = new StringBuilder();
 				str.append("Type : ").append(typeName).append("\n");

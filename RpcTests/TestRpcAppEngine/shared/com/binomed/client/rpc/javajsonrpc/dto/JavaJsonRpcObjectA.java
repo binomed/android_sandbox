@@ -4,7 +4,15 @@ import java.util.List;
 
 import com.binomed.client.IObjectA;
 
+/**
+ * Java-Json instance of {@link IObjectA}
+ * 
+ * @author jefBinomed
+ * 
+ */
 public class JavaJsonRpcObjectA implements IObjectA<JavaJsonRpcObjectB> {
+
+	private static final long serialVersionUID = 5272266815459595655L;
 
 	public JavaJsonRpcObjectA() {
 		super();

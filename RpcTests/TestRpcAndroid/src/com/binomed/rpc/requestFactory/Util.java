@@ -20,6 +20,7 @@ import java.net.URISyntaxException;
 import android.content.Context;
 import android.util.Log;
 
+import com.binomed.rpc.AndroidRpcProjectActivity;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 import com.google.web.bindery.requestfactory.shared.RequestFactory;
 import com.google.web.bindery.requestfactory.vm.RequestFactorySource;
@@ -46,17 +47,16 @@ public class Util {
 	 */
 	public static final String RF_METHOD = "/gwtRequest";
 
-	public static final String LOCALHOST = "http://10.0.2.2:8888"; //$NON-NLS-1$
-
 	/**
 	 * Creates and returns an initialized {@link RequestFactory} of the given type.
 	 */
 	public static <T extends RequestFactory> T getRequestFactory(Context context, Class<T> factoryClass) {
 		T requestFactory = RequestFactorySource.create(factoryClass);
 
+		// The cookie is faked because for this example, we don't need one
 		String authCookie = null;
 
-		String uriString = LOCALHOST + RF_METHOD;
+		String uriString = AndroidRpcProjectActivity.LOCALHOST + RF_METHOD;
 		URI uri;
 		try {
 			uri = new URI(uriString);

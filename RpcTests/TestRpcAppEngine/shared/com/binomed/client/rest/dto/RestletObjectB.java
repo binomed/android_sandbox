@@ -3,14 +3,21 @@ package com.binomed.client.rest.dto;
 import java.io.Serializable;
 import java.util.HashMap;
 
+import com.binomed.client.IObjectB;
 import com.binomed.client.IObjectBMap;
 
+/**
+ * Rest Instance of {@link IObjectB}
+ * 
+ * @author jefBinomed
+ * 
+ */
 public class RestletObjectB implements IObjectBMap, Serializable {
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 9046805886041076231L;
 
 	public RestletObjectB() {
 		super();

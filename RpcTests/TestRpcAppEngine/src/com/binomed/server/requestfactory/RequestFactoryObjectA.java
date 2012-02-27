@@ -2,6 +2,14 @@ package com.binomed.server.requestfactory;
 
 import java.util.List;
 
+import com.binomed.client.IObjectA;
+
+/**
+ * Request Factory implementation of {@link IObjectA}
+ * 
+ * @author jefBinomed
+ * 
+ */
 public class RequestFactoryObjectA {
 
 	public RequestFactoryObjectA() {

@@ -11,8 +11,19 @@ import com.binomed.client.rpc.javajsonrpc.IJavaJsonRpcService;
 import com.binomed.client.rpc.javajsonrpc.dto.JavaJsonRpcObjectA;
 import com.binomed.client.rpc.javajsonrpc.dto.JavaJsonRpcObjectB;
 
+/**
+ * Implementation of java-json service
+ * 
+ * @author jefBinomed
+ * 
+ */
 public class JavaJsonRpcService implements IJavaJsonRpcService {
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.binomed.client.rpc.javajsonrpc.IJavaJsonRpcService#getMessage()
+	 */
 	@Override
 	public JavaJsonRpcObjectA getMessage() throws JsonParseException, JsonMappingException, IOException {
 		JavaJsonRpcObjectB objB = new JavaJsonRpcObjectB();
@@ -29,6 +40,11 @@ public class JavaJsonRpcService implements IJavaJsonRpcService {
 		return result;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.binomed.client.rpc.javajsonrpc.IJavaJsonRpcService#getMessageWithParameter(com.binomed.client.rpc.javajsonrpc.dto.JavaJsonRpcObjectB)
+	 */
 	@Override
 	public JavaJsonRpcObjectA getMessageWithParameter(JavaJsonRpcObjectB parameter) throws JsonParseException, JsonMappingException, IOException {
 		JavaJsonRpcObjectA result = new JavaJsonRpcObjectA();

@@ -2,9 +2,19 @@ package com.binomed.client.rpc.javajsonrpc.dto;
 
 import java.util.HashMap;
 
+import com.binomed.client.IObjectB;
 import com.binomed.client.IObjectBMap;
 
+/**
+ * Java-Json instance of {@link IObjectB}
+ * 
+ * @author jefBinomed
+ * 
+ * 
+ */
 public class JavaJsonRpcObjectB implements IObjectBMap {
+
+	private static final long serialVersionUID = 8503740839367420950L;
 
 	public JavaJsonRpcObjectB() {
 		super();

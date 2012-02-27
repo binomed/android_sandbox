@@ -4,6 +4,12 @@ import org.restlet.Application;
 import org.restlet.Restlet;
 import org.restlet.routing.Router;
 
+/**
+ * Restlet Application
+ * 
+ * @author jefBinomed
+ * 
+ */
 public class RestletApplication extends Application {
 
 	/**
@@ -16,11 +22,7 @@ public class RestletApplication extends Application {
 		Router router = new Router(getContext());
 
 		// Defines only one route
-		// router.attachDefault(new Directory(getContext(), "war:///"));
-		// router.attach("/test/", RestResource.class);
-		// router.attachDefault(RestResource.class);
 		router.attach("/test", RestResource.class);
-		// router.attach("/test/{param}", RestResourceParam.class);
 		router.attach("/testParam", RestResourceParam.class);
 
 		return router;
