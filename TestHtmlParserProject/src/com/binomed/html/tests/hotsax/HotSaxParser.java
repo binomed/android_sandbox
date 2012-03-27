@@ -1,12 +1,16 @@
 package com.binomed.html.tests.hotsax;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 
 public class HotSaxParser implements ContentHandler {
+
+	private Log LOGGER = LogFactory.getLog(HotSaxParser.class);
 
 	@Override
 	public void characters(char[] ch, int start, int length) throws SAXException {
@@ -15,14 +19,14 @@ public class HotSaxParser implements ContentHandler {
 
 	@Override
 	public void endDocument() throws SAXException {
-		System.out.println("END document with HotSaxParser");
-		System.out.println("==============================");
+		LOGGER.info("END document with HotSaxParser");
+		LOGGER.info("==============================");
 	}
 
 	@Override
 	public void startDocument() throws SAXException {
-		System.out.println("==============================");
-		System.out.println("Start document with HotSaxParser");
+		LOGGER.info("==============================");
+		LOGGER.info("Start document with HotSaxParser");
 
 	}
 
@@ -30,7 +34,7 @@ public class HotSaxParser implements ContentHandler {
 	public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
 		if (StringUtils.equalsIgnoreCase(localName, "div")) {
 			for (int i = 0; i < atts.getLength(); i++) {
-				System.out.println(atts.getLocalName(i) + " : " + atts.getValue(i));
+				LOGGER.info(atts.getLocalName(i) + " : " + atts.getValue(i));
 			}
 		}
 
