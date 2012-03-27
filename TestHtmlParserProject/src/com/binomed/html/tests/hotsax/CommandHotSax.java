@@ -11,7 +11,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-import com.binomed.html.tests.CommandParseDocument;
+import com.binomed.html.tests.api.CommandParseDocument;
 
 @Repository
 public class CommandHotSax implements CommandParseDocument {

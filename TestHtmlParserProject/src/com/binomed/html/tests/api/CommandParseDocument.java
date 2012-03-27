@@ -1,4 +1,4 @@
-package com.binomed.html.tests;
+package com.binomed.html.tests.api;
 
 public interface CommandParseDocument {
 

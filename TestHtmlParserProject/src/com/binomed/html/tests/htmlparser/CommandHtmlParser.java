@@ -4,7 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Repository;
 
-import com.binomed.html.tests.CommandParseDocument;
+import com.binomed.html.tests.api.CommandParseDocument;
 
 @Repository
 public class CommandHtmlParser implements CommandParseDocument {
