@@ -16,6 +16,7 @@ public class HtmlParserAPI implements IHtmlParserAPI {
 	public void runTest() {
 		for (CommandParseDocument commandParser : commandsParsers) {
 			commandParser.parseDocument("/Binomed.htm");
+			// commandParser.parseDocument("/Google.htm");
 		}
 
 	}

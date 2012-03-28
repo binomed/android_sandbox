@@ -1,5 +1,8 @@
 package com.binomed.html.tests.hotsax;
 
+import java.util.LinkedList;
+import java.util.Queue;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -12,9 +15,17 @@ public class HotSaxParser implements ContentHandler {
 
 	private Log LOGGER = LogFactory.getLog(HotSaxParser.class);
 
+	private StringBuilder strBuilder = new StringBuilder();
+
+	private Queue<String> tagCharacters = new LinkedList<String>();
+
 	@Override
 	public void characters(char[] ch, int start, int length) throws SAXException {
-
+		strBuilder.append(ch, start, length);
+		if (!tagCharacters.isEmpty()) {
+			LOGGER.info("Characters pour le tag: " + tagCharacters.poll());
+		}
+		LOGGER.info("Characters : " + new String(ch, start, length));
 	}
 
 	@Override
@@ -32,9 +43,17 @@ public class HotSaxParser implements ContentHandler {
 
 	@Override
 	public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
+		tagCharacters.add(localName);
 		if (StringUtils.equalsIgnoreCase(localName, "div")) {
+
+			if (StringUtils.equals(atts.getValue("id"), "latest_news")) {
+				LOGGER.info("==============================");
+				LOGGER.info("LASTEST NEWS");
+				LOGGER.info("==============================");
+
+			}
 			for (int i = 0; i < atts.getLength(); i++) {
-				LOGGER.info(atts.getLocalName(i) + " : " + atts.getValue(i));
+				LOGGER.info(atts.getQName(i) + " : " + atts.getValue(i));
 			}
 		}
 
@@ -51,6 +70,10 @@ public class HotSaxParser implements ContentHandler {
 
 	@Override
 	public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException {
+		if (!tagCharacters.isEmpty()) {
+			LOGGER.info("IgnorableCharacters pour le tag: " + tagCharacters.poll());
+		}
+		LOGGER.info("IgnorableCharacters : " + new String(ch, start, length));
 	}
 
 	@Override
@@ -63,6 +86,9 @@ public class HotSaxParser implements ContentHandler {
 
 	@Override
 	public void skippedEntity(String name) throws SAXException {
+
+		LOGGER.info("SkippedEntity : " + name);
+
 	}
 
 	@Override
