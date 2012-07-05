@@ -12,10 +12,11 @@
  * THE ACCOMPANYING PROGRAM IS PROVIDED UNDER THE TERMS OF THIS ECLIPSE PUBLIC 
  * LICENSE ("AGREEMENT"). ANY USE, REPRODUCTION OR DISTRIBUTION OF THE PROGRAM 
  * CONSTITUTES RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT.
- */ 
--->
-<ListView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/list"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    />
+ */ 
+ -->
+<resources>
+	<color  name="baground_start_dark">#1a1a1a</color>
+    <color  name="baground_center_dark">#323232</color>
+    <color  name="baground_end_dark">#4b4b4b</color>
+    
+</resources>

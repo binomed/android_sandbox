@@ -1,3 +1,16 @@
+/*
+ * Copyright (C) 2012 Binomed (http://blog.binomed.fr)
+ *
+ * Licensed under the Eclipse Public License - v 1.0;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.eclipse.org/legal/epl-v10.html
+ *
+ * THE ACCOMPANYING PROGRAM IS PROVIDED UNDER THE TERMS OF THIS ECLIPSE PUBLIC 
+ * LICENSE ("AGREEMENT"). ANY USE, REPRODUCTION OR DISTRIBUTION OF THE PROGRAM 
+ * CONSTITUTES RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT.
+ */
 package com.binomed.test.custom;
 
 import android.os.Bundle;
@@ -7,62 +20,45 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
 
-public class ExpandableFragment extends Fragment implements IFragmentCacheColor {
+public class ExpandableFragment extends Fragment {
 
-	private boolean cacheColorHint;
-	private boolean transparentCacheColorHint;
+	/**
+	 * The expandable list
+	 */
 	private ExpandableListView list;
+	/**
+	 * The base adapter
+	 */
 	private CustomAdapterExpand adapter;
+
+	/**
+	 * The layout to use
+	 */
+	private int layout;
+
+	public ExpandableFragment() {
+		super();
+	}
+
+	/**
+	 * @param layout
+	 */
+	public void setLayout(int layout) {
+		this.layout = layout;
+	}
 
 	/** Called when the activity is first created. */
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-		View mainView = inflater.inflate(R.layout.fragment_expand, container, false);
+		View mainView = inflater.inflate(layout, container, false);
 		list = (ExpandableListView) mainView.findViewById(R.id.listExpand);
+		// We don't want a group indicator
 		list.setGroupIndicator(null);
 		adapter = new CustomAdapterExpand(getActivity().getApplicationContext());
-		redraw();
+		list.setAdapter(adapter);
 		return mainView;
 
-	}
-
-	private void redraw() {
-		if (list != null) {
-			if (cacheColorHint) {
-				if (transparentCacheColorHint) {
-					list.setCacheColorHint(android.R.color.transparent);
-				} else {
-					list.setCacheColorHint(android.R.color.darker_gray);
-				}
-			} else {
-				list.setCacheColorHint(android.R.color.background_dark);
-			}
-
-			list.setAdapter(adapter);
-		}
-
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.binomed.test.custom.IFragmentCacheColor#setCacheColorHint(boolean)
-	 */
-	@Override
-	public void setCacheColorHint(boolean useCacheColorHint) {
-		this.cacheColorHint = useCacheColorHint;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.binomed.test.custom.IFragmentCacheColor#setTransparentCacheColorHint(boolean)
-	 */
-	@Override
-	public void setTransparentCacheColorHint(boolean useTransparentCacheColorHint) {
-		this.transparentCacheColorHint = useTransparentCacheColorHint;
-		redraw();
 	}
 
 }
