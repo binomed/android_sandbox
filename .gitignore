@@ -205,3 +205,14 @@
 /TestHtmlParserProject/bin/Binomed.htm
 /TestHtmlParserProject/bin/applicationContext.xml
 /TestHtmlParserProject/bin/log4j.xml
+/TestHtmlParserProject/bin/Google.htm
+/AndEngineSandBox/bin/classes/com/binomed/andengine/.gitignore
+/AndEngineSandBox/bin/jarlist.cache
+/AndEngineSandBox/gen/com/binomed/andengine/BuildConfig.java
+/RpcTests/TestRpcAndroid/bin/jarlist.cache
+/RpcTests/TestRpcAndroid/gen/com/binomed/rpc/BuildConfig.java
+/CustomView/bin/classes.dex
+/CustomView/bin/AndroidManifest.xml
+/CustomView/bin/com.binomed.test.custom.CustomViewActivity.apk
+/CustomView/bin/res/drawable/icon.png
+/CustomView/gen/com/binomed/test/custom/BuildConfig.java

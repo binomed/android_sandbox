@@ -2,4 +2,7 @@
 <resources>
     <string name="hello">Hello World, CustomViewActivity!</string>
     <string name="app_name">CustomView</string>
+    <string name="expand">Expandable List (if check, else its a ListView)</string>
+    <string name="cacheColor">Use cache color hint</string>
+    <string name="transparentCacheColor">Use transparent cache color</string>
 </resources>
