@@ -1,3 +1,16 @@
+/*
+ * Copyright (C) 2012 Binomed (http://blog.binomed.fr)
+ *
+ * Licensed under the Eclipse Public License - v 1.0;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.eclipse.org/legal/epl-v10.html
+ *
+ * THE ACCOMPANYING PROGRAM IS PROVIDED UNDER THE TERMS OF THIS ECLIPSE PUBLIC 
+ * LICENSE ("AGREEMENT"). ANY USE, REPRODUCTION OR DISTRIBUTION OF THE PROGRAM 
+ * CONSTITUTES RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT.
+ */
 package com.binomed.test.custom;
 
 import android.content.Context;
@@ -5,36 +18,40 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
-import android.util.AttributeSet;
 import android.view.View;
 
+/**
+ * @author Jef
+ * 
+ * Complex custom view that only show text
+ *
+ */
 public class CustomView extends View {
 
 	private static final String SPACE = " ";
 
-	private Paint mainPaint = new Paint();
-	private Paint paint = new Paint();
-	private Paint paintBlue = new Paint();
-	private Paint paintGray = new Paint();
+	private final Paint mainPaint = new Paint();
+	private final Paint paint = new Paint();
+	private final Paint paintBlue = new Paint();
+	private final Paint paintGray = new Paint();
 
 	private String text;
-	private String textLong = "un texte qui est long et qui merrite d'etre couper dcar c'est long";
-	private String[] splitTextLong = textLong.split(SPACE);
+	private final String textLong = "A text which is very long and have to be cut because it's too long !";
+	private final String[] splitTextLong = textLong.split(SPACE);
 	private int index;
 	private int mAscent, mAscentMain;
-	private int measureSpace;
+	private final int measureSpace;
 	private int specSizeWidth;
+	private final int paddingLeft;
 
-	public CustomView(Context context, AttributeSet attrs, int defStyle) {
-		super(context, attrs, defStyle);
-	}
 
-	public CustomView(Context context, AttributeSet attrs) {
-		super(context, attrs);
-	}
-
-	public CustomView(Context context) {
+	/**
+	 * @param context
+	 * @param paddingLeft
+	 */
+	public CustomView(Context context, int paddingLeft) {
 		super(context);
+		this.paddingLeft = paddingLeft;
 		mainPaint.setColor(Color.WHITE);
 		mainPaint.setStyle(Style.FILL);
 		mainPaint.setTextSize(20);
@@ -52,9 +69,14 @@ public class CustomView extends View {
 		measureSpace = (int) mainPaint.measureText(SPACE);
 	}
 
+	/**
+	 * @param text
+	 * @param index
+	 */
 	public void changeText(String text, int index) {
 		this.text = text;
 		this.index = index;
+		// we force the view to change
 		requestLayout();
 		invalidate();
 
@@ -186,6 +208,9 @@ public class CustomView extends View {
 		return result;
 	}
 
+	/* (non-Javadoc)
+	 * @see android.view.View#onDraw(android.graphics.Canvas)
+	 */
 	@Override
 	protected void onDraw(Canvas canvas) {
 		super.onDraw(canvas);
@@ -246,7 +271,16 @@ public class CustomView extends View {
 			posX += paint.measureText(text) + 5;
 			i--;
 		}
-		// invalidate();
 	}
+
+	/* (non-Javadoc)
+	 * @see android.view.View#getPaddingLeft()
+	 */
+	@Override
+	public int getPaddingLeft() {
+		return paddingLeft;
+	}
+	
+	
 
 }

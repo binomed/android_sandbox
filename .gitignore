@@ -7,9 +7,10 @@
 /MyFirstAnimation/proguard.cfg
 /MyFirstFragment/bin/classes.dex
 /MyFirstFragment/gen/com/binomed/fragment/R.java
-/CustomView/bin/CustomView.apk
+/CustomView/bin
+/CustomView/gen
+/CustomView/assets
 /CustomView/proguard.cfg
-/CustomView/bin/resources.ap_
 /AndEngineSandBox/bin/resources.ap_
 /AndEngineSandBox/default.properties
 /AndEngineSandBox/gen/com/binomed/andengine/R.java

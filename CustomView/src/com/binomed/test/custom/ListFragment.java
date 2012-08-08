@@ -1,3 +1,16 @@
+/*
+ * Copyright (C) 2012 Binomed (http://blog.binomed.fr)
+ *
+ * Licensed under the Eclipse Public License - v 1.0;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.eclipse.org/legal/epl-v10.html
+ *
+ * THE ACCOMPANYING PROGRAM IS PROVIDED UNDER THE TERMS OF THIS ECLIPSE PUBLIC 
+ * LICENSE ("AGREEMENT"). ANY USE, REPRODUCTION OR DISTRIBUTION OF THE PROGRAM 
+ * CONSTITUTES RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT.
+ */
 package com.binomed.test.custom;
 
 import android.os.Bundle;
@@ -7,51 +20,49 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-public class ListFragment extends Fragment implements IFragmentCacheColor {
+/**
+ * @author Jef
+ * 
+ *         Fragment class for ListView
+ * 
+ */
+public class ListFragment extends Fragment {
 
-	private boolean cacheColorHint;
-	private boolean transparentCacheColorHint;
+	/**
+	 * The listView
+	 */
+	private ListView list;
+	/**
+	 * The list adapter
+	 */
+	private CustomAdapter adapter;
+
+	/**
+	 * The layout to use
+	 */
+	private int layout;
+
+	public ListFragment() {
+		super();
+	}
+
+	/**
+	 * @param layout
+	 */
+	public void setLayout(int layout) {
+		this.layout = layout;
+	}
 
 	/** Called when the activity is first created. */
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-		View mainView = inflater.inflate(R.layout.fragment_list, container, false);
-		ListView list = (ListView) mainView.findViewById(R.id.list);
-		if (cacheColorHint) {
-			if (transparentCacheColorHint) {
-				list.setCacheColorHint(android.R.color.transparent);
-			} else {
-				list.setCacheColorHint(android.R.color.darker_gray);
-			}
-		} else {
-			list.setCacheColorHint(android.R.color.background_dark);
-		}
+		View mainView = inflater.inflate(layout, container, false);
+		list = (ListView) mainView.findViewById(R.id.list);
+		adapter = new CustomAdapter(getActivity().getApplicationContext());
 
-		list.setAdapter(new CustomAdapter(getActivity().getApplicationContext()));
-
+		list.setAdapter(adapter);
 		return mainView;
-
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.binomed.test.custom.IFragmentCacheColor#setCacheColorHint(boolean)
-	 */
-	@Override
-	public void setCacheColorHint(boolean useCacheColorHint) {
-		this.cacheColorHint = useCacheColorHint;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.binomed.test.custom.IFragmentCacheColor#setTransparentCacheColorHint(boolean)
-	 */
-	@Override
-	public void setTransparentCacheColorHint(boolean useTransparentCacheColorHint) {
-		this.transparentCacheColorHint = useTransparentCacheColorHint;
 
 	}
 
