@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">GdgFormValidator</string>
+    <string name="checkCode">Check the code</string>
+</resources>
