@@ -1,5 +1,6 @@
 package com.binomed.gdg.form;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
 import android.accounts.Account;
@@ -13,23 +14,31 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.MediaStore.Files;
 import android.util.Log;
 import android.view.View;
 
 import com.binomed.gdg.form.tools.IntentIntegrator;
 import com.binomed.gdg.form.tools.IntentResult;
+import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.auth.oauth2.draft10.AccessProtectedResource;
 import com.google.api.client.extensions.android2.AndroidHttp;
+import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
 import com.google.api.client.googleapis.auth.oauth2.draft10.GoogleAccessProtectedResource;
 import com.google.api.client.http.HttpTransport;
+import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson.JacksonFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
+import com.google.api.services.drive.model.File;
+import com.google.api.services.drive.model.FileList;
 
 public class MainActivity extends Activity {
 
 	private static final int DIALOG_ACCOUNTS = 1;
 	private static final String AUTH_TOKEN_TYPE = "oauth2:"+DriveScopes.DRIVE_FILE;
+	
+	private static final String TAG = "GdgFormValidator";
 	
 	private AccountManager accountManager;
 
@@ -84,32 +93,70 @@ public class MainActivity extends Activity {
 							String token = future.getResult().getString(
 									AccountManager.KEY_AUTHTOKEN);
 							// Now you can use the Tasks API...
-							useTasksAPI(token);
+							useDriveAPI(token);
 						} catch (OperationCanceledException e) {
 							// TODO: The user has denied you access to the API,
 							// you should handle that
 						} catch (Exception e) {
-							Log.e("GdgFormValidator", e.getLocalizedMessage(),
+							Log.e(TAG, e.getLocalizedMessage(),
 									e);
 						}
 					}
 				}, null);
 	}
 
-	protected void useTasksAPI(String accessToken) {
+	protected void useDriveAPI(String accessToken) {
 		// Setting up the Tasks API Service
 //		HttpTransport transport = AndroidHttp.newCompatibleTransport();
 //		AccessProtectedResource accessProtectedResource = new GoogleAccessProtectedResource(
 //				accessToken);
+		
+		
+//		// Set up the HTTP transport and JSON factory
+//		HttpTransport httpTransport = AndroidHttp.newCompatibleTransport();
+//		JsonFactory jsonFactory = new JacksonFactory();
+//		
+//		 String json = "{"+//
+//			       "\"web\": {"+//
+//			       "  \"client_id\": \"[[YOUR_CLIENT_ID]]\","+//
+//			       "  \"client_secret\": \"[[YOUR_CLIENT_SECRET]]\","+//
+//			       "  \"auth_uri\": \"https://accounts.google.com/o/oauth2/auth\","+//
+//			       "  \"token_uri\": \"https://accounts.google.com/o/oauth2/token\""+//
+//			       "}"+//
+//			    "}";//
+//		
+//		
+//		GoogleClientSecrets clientSecrets =
+//		          GoogleClientSecrets.load(jsonFactory,new ByteArrayInputStream(json.getBytes()));
+//		      flow =
+//		          new GoogleAuthorizationCodeFlow.Builder(httpTransport, jsonFactory, clientSecrets, SCOPES)
+//		              .setAccessType("offline").setApprovalPrompt("force").build();
+//
+//		// Set up OAuth 2.0 access of protected resources
+//		// using the refresh and access tokens, automatically
+//		// refreshing the access token when it expires
+//		Credential credential = new Credential.Builder(accessMethod)
+//		    .setJsonFactory(jsonFactory)
+//		    .setTransport(httpTransport)
+//		    .setTokenServerEncodedUrl(tokenServerEncodedUrl)
+//		    .setClientAuthentication(clientAuthentication)
+//		    .setRequestInitializer(requestInitializer)
+//		    .build();
+//		
+//		
 //		Drive service = new Drive.Builder(transport, new JacksonFactory(), accessProtectedResource) //
 //				.setApplicationName("GdgFormValidator") //
 //				.build();
 //		
 //		try {
-//			service.files().list();
+//			com.google.api.services.drive.Drive.Files.List request = service.files().list();
+//			FileList list = request.execute();
+//			for (File file : list.getItems()){
+//				Log.i(TAG, file.getId()+" | "+file.getTitle()+" | "+file.getMimeType());
+//			}
 //		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
+//			Log.e(TAG, e.getLocalizedMessage(),
+//					e);
 //		}
 
 		// TODO: now use the service to query the Tasks API
