@@ -12,10 +12,15 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.binomed.gdg.form.asynctask.AsyncTaskDriveForm;
 import com.binomed.gdg.form.asynctask.AsyncTaskDriveForm.CallBackDriveForm;
@@ -34,6 +39,7 @@ import com.google.api.client.json.jackson.JacksonFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.FileList;
+import com.google.common.base.Objects;
 import com.google.gdata.client.spreadsheet.SpreadsheetService;
 import com.google.gdata.data.spreadsheet.ListEntry;
 import com.google.gdata.data.spreadsheet.ListFeed;
@@ -81,6 +87,19 @@ public class GdgFormActivity extends Activity implements //
 	 */
 	private static final String APP_NAME = "GdgFormValidator";
 
+	/**
+	 * Settings key for account Name
+	 */
+	private static final String PREF_KEY_ACCOUNT = "accountName";
+	/**
+	 * Settings key for form id
+	 */
+	private static final String PREF_KEY_FILE = "fileName";
+	/**
+	 * Settings key for the codes to use for validation
+	 */
+	private static final String PREF_KEY_CODES = "codes";
+
 	private static final String TAG = "GdgFormValidator";
 
 	/*
@@ -105,6 +124,19 @@ public class GdgFormActivity extends Activity implements //
 	 */
 	private Handler handler;
 
+	/**
+	 * The shared preferences
+	 */
+	private SharedPreferences settings;
+	/**
+	 * Account Name
+	 */
+	private String accountName;
+	/**
+	 * Formular Id
+	 */
+	private String formId;
+
 	/*
 	 * OAuth vars
 	 */
@@ -116,10 +148,6 @@ public class GdgFormActivity extends Activity implements //
 	 * OAuth2 token
 	 */
 	private String token;
-	/**
-	 * Account Name
-	 */
-	private String accountName;
 
 	/**
 	 * Transport connection
@@ -161,6 +189,15 @@ public class GdgFormActivity extends Activity implements //
 	private AsyncTaskWorksheet asyncTaskWorkSheet;
 
 	/*
+	 * 
+	 * UI Widgets
+	 */
+
+	private EditText accountNameText, fileText;
+	private TextView loadText, validText;
+	private ProgressBar progressBar;
+
+	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see android.app.Activity#onCreate(android.os.Bundle)
@@ -169,16 +206,21 @@ public class GdgFormActivity extends Activity implements //
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
+
+		this.accountNameText = (EditText) findViewById(R.id.accountName);
+		this.fileText = (EditText) findViewById(R.id.file);
+		this.loadText = (TextView) findViewById(R.id.loadText);
+		this.validText = (TextView) findViewById(R.id.validText);
+		this.progressBar = (ProgressBar) findViewById(R.id.progressBar);
 		this.activity = this;
 		this.handler = new Handler();
 
+		settings = getPreferences(MODE_PRIVATE);
+		accountName = settings.getString(PREF_KEY_ACCOUNT, null);
+		formId = settings.getString(PREF_KEY_FILE, null);
+
 		accountManager = AccountManager.get(this);
-		Account[] accounts = accountManager.getAccountsByType("com.google");
-		if (accounts.length > 1) {
-			showDialog(DIALOG_ACCOUNTS);
-		} else if (accounts.length == 1) {
-			gotAccount(accounts[0]);
-		}
+		checkAccount();
 	}
 
 	/*
@@ -249,8 +291,39 @@ public class GdgFormActivity extends Activity implements //
 		return null;
 	}
 
+	/**
+	 * Check the account
+	 */
+	private void checkAccount() {
+
+		Account[] accounts = accountManager.getAccountsByType("com.google");
+		if (accountName == null) {
+			if (accounts.length > 1) {
+				showDialog(DIALOG_ACCOUNTS);
+			} else if (accounts.length == 1) {
+				gotAccount(accounts[0]);
+			}
+		} else {
+			for (Account account : accounts) {
+				if (Objects.equal(account.name, this.accountName)) {
+					gotAccount(account);
+					break;
+				}
+			}
+		}
+	}
+
+	/**
+	 * Called when an account has been selected
+	 * 
+	 * @param account
+	 */
 	private void gotAccount(final Account account) {
 		this.accountName = account.name;
+		this.accountNameText.setText(this.accountName);
+		Editor editor = settings.edit();
+		editor.putString(PREF_KEY_ACCOUNT, accountName);
+		editor.commit();
 		accountManager.getAuthToken(account, AUTH_TOKEN_TYPE, null, this, new AccountManagerCallback<Bundle>() {
 			public void run(AccountManagerFuture<Bundle> future) {
 				try {

@@ -1,16 +1,89 @@
+                                <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent" >
 
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent" >
+                    <TextView
+                        android:id="@+id/lblAccount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginLeft="15dp"
+                        android:layout_marginTop="50dp"
+                        android:text="@string/accountName"
+                        android:textSize="15sp" />
+
+                    <EditText
+                        android:id="@+id/accountName"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignBottom="@+id/lblAccount"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="15dp"
+                        android:layout_toRightOf="@+id/lblAccount" />
+
+                    <Button
+                        android:id="@+id/button1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginBottom="140dp"
+                        android:onClick="clickEvent"
+                        android:text="@string/checkCode" />
 
-        <Button
-            android:id="@+id/button1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="170dp"
-            android:onClick="clickEvent"
-            android:text="@string/checkCode" />
+                    <TextView
+                        android:id="@+id/lblFile"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/accountName"
+                        android:layout_marginTop="42dp"
+                        android:layout_toLeftOf="@+id/accountName"
+                        android:text="@string/file"
+                        android:textSize="15sp" />
 
-    </RelativeLayout>
+                    <EditText
+                        android:id="@+id/file"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                         android:layout_alignBottom="@+id/lblFile"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="15dp"
+                        android:layout_toRightOf="@+id/lblFile"  >
+
+                        <requestFocus />
+                    </EditText>
+
+                    <ProgressBar
+                        android:id="@+id/progressBar"
+                        style="?android:attr/progressBarStyleLarge"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignRight="@+id/file"
+                        android:layout_below="@+id/file"
+                        android:layout_marginRight="38dp"
+                        android:layout_marginTop="40dp" 
+                        android:visibility="invisible"/>
+
+                    <TextView
+                        android:id="@+id/loadText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignBottom="@+id/progressBar"
+                        android:layout_marginBottom="20dp"
+                        android:layout_marginRight="19dp"
+                        android:layout_toLeftOf="@+id/progressBar"
+                        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+                    <TextView
+                        android:id="@+id/validText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginBottom="70dp"
+                        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+                </RelativeLayout>
