@@ -3,4 +3,13 @@
     <string name="checkCode">Check the code</string>
     <string name="accountName">Account Name</string>
     <string name="file">Select Form</string>
+    <string name="search_drive_files">Searching Drive Files...</string>
+    <string name="search_spreadsheet_files">Searching Spreadsheet Files...</string>
+    <string name="search_worksheet">Retrieve form informations...</string>
+    <string name="get_token">Retrieve OAth2 token...</string>
+    <string name="clear_datas">Clear datas</string>
+    <string name="refresh_datas">Refresh codes</string>
+    <string name="datas_load">Datas load !</string>
+    <string name="invalid_form">Invalid form (does not have "Codes worksheet")</string>
+    
 </resources>

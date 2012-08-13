@@ -1,6 +1,10 @@
 package com.binomed.gdg.form;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -14,10 +18,14 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -44,6 +52,7 @@ import com.google.gdata.client.spreadsheet.SpreadsheetService;
 import com.google.gdata.data.spreadsheet.ListEntry;
 import com.google.gdata.data.spreadsheet.ListFeed;
 import com.google.gdata.data.spreadsheet.SpreadsheetEntry;
+import com.google.gdata.data.spreadsheet.WorksheetEntry;
 
 /**
  * @author Jef
@@ -73,6 +82,15 @@ public class GdgFormActivity extends Activity implements //
 	 * Constantes for selecting formular
 	 */
 	private static final int DIALOG_SPREADSHEET_FORM = 3;
+
+	/**
+	 * Constantes for cleaning datas from application
+	 */
+	private static final int MENU_CLEAR = 1;
+	/**
+	 * Constatne for refreshing datas from formular
+	 */
+	private static final int MENU_REFRESH = 2;
 	/**
 	 * OAuth2 token needed
 	 */
@@ -94,11 +112,27 @@ public class GdgFormActivity extends Activity implements //
 	/**
 	 * Settings key for form id
 	 */
+	private static final String PREF_KEY_FILE_ID = "fileId";
+	/**
+	 * Settings key for form Name
+	 */
 	private static final String PREF_KEY_FILE = "fileName";
 	/**
 	 * Settings key for the codes to use for validation
 	 */
 	private static final String PREF_KEY_CODES = "codes";
+	/**
+	 * Settings key for the feed url for informations of spreadsheet
+	 */
+	private static final String PREF_KEY_FEED_URL = "feedURL";
+	/**
+	 * WorkSheetName
+	 */
+	private static final String WORKSHEET_NAME = "Codes";
+	/**
+	 * Tag column Name
+	 */
+	private static final String TAG_CODE_COL = "code";
 
 	private static final String TAG = "GdgFormValidator";
 
@@ -136,6 +170,10 @@ public class GdgFormActivity extends Activity implements //
 	 * Formular Id
 	 */
 	private String formId;
+	/**
+	 * Formular Name
+	 */
+	private String formName;
 
 	/*
 	 * OAuth vars
@@ -196,6 +234,7 @@ public class GdgFormActivity extends Activity implements //
 	private EditText accountNameText, fileText;
 	private TextView loadText, validText;
 	private ProgressBar progressBar;
+	private Button buttonCheck;
 
 	/*
 	 * (non-Javadoc)
@@ -212,12 +251,15 @@ public class GdgFormActivity extends Activity implements //
 		this.loadText = (TextView) findViewById(R.id.loadText);
 		this.validText = (TextView) findViewById(R.id.validText);
 		this.progressBar = (ProgressBar) findViewById(R.id.progressBar);
+		this.buttonCheck = (Button) findViewById(R.id.button1);
+		this.buttonCheck.setEnabled(false);
 		this.activity = this;
 		this.handler = new Handler();
 
 		settings = getPreferences(MODE_PRIVATE);
 		accountName = settings.getString(PREF_KEY_ACCOUNT, null);
-		formId = settings.getString(PREF_KEY_FILE, null);
+		formId = settings.getString(PREF_KEY_FILE_ID, null);
+		formName = settings.getString(PREF_KEY_FILE, null);
 
 		accountManager = AccountManager.get(this);
 		checkAccount();
@@ -314,6 +356,20 @@ public class GdgFormActivity extends Activity implements //
 	}
 
 	/**
+	 * Check the formular
+	 */
+	private void checkFormId() {
+
+		if (formId != null) {
+			this.fileText.setText(formName);
+			datasLoad();
+		} else {
+			useSpreadsheetAPI();
+		}
+
+	}
+
+	/**
 	 * Called when an account has been selected
 	 * 
 	 * @param account
@@ -324,9 +380,11 @@ public class GdgFormActivity extends Activity implements //
 		Editor editor = settings.edit();
 		editor.putString(PREF_KEY_ACCOUNT, accountName);
 		editor.commit();
+		waitMessage(R.string.get_token);
 		accountManager.getAuthToken(account, AUTH_TOKEN_TYPE, null, this, new AccountManagerCallback<Bundle>() {
 			public void run(AccountManagerFuture<Bundle> future) {
 				try {
+					discardWait();
 					// If the user has authorized your application to
 					// use the tasks API
 					// a token is available.
@@ -335,10 +393,8 @@ public class GdgFormActivity extends Activity implements //
 					GdgFormActivity.this.credential = getCredentialGoogle(token);
 
 					initServices();
+					checkFormId();
 
-					// Now you can use the Tasks API...
-					// useDriveAPI();
-					useSpreadsheetAPI();
 				} catch (OperationCanceledException e) {
 					// TODO: The user has denied you access to the API,
 					// you should handle that
@@ -362,16 +418,13 @@ public class GdgFormActivity extends Activity implements //
 		spreadSheetService = new SpreadsheetService(APP_NAME);
 		spreadSheetService.setAuthSubToken(token);
 
-		asyncTaskDriveForm = new AsyncTaskDriveForm(this, driveService);
-		asyncTaskSpreadsheetForm = new AsyncTaskSpreadsheetForm(this, spreadSheetService);
-		asyncTaskWorkSheet = new AsyncTaskWorksheet(this, spreadSheetService);
-
 	}
 
 	/**
 	 * 
 	 */
 	private void useDriveAPI() {
+		asyncTaskDriveForm = new AsyncTaskDriveForm(this, driveService);
 		asyncTaskDriveForm.execute();
 	}
 
@@ -379,6 +432,7 @@ public class GdgFormActivity extends Activity implements //
 	 * 
 	 */
 	private void useSpreadsheetAPI() {
+		asyncTaskSpreadsheetForm = new AsyncTaskSpreadsheetForm(this, spreadSheetService);
 		asyncTaskSpreadsheetForm.execute();
 	}
 
@@ -395,18 +449,67 @@ public class GdgFormActivity extends Activity implements //
 	 * @param entry
 	 *            call after selecting a form from spreadsheet
 	 */
-	private void gotForm(SpreadsheetEntry entry) {
-		asyncTaskWorkSheet.setSpreadSheetEntry(entry);
-		asyncTaskWorkSheet.execute();
+	private void gotForm(final SpreadsheetEntry entry) {
+		this.formId = entry.getKey();
+		this.formName = entry.getTitle().getPlainText();
+		this.fileText.setText(this.formName);
+
+		// We control the workSheet
+		new AsyncTask<Void, Void, Void>() {
+
+			@Override
+			protected Void doInBackground(Void... params) {
+				try {
+					WorksheetEntry workSheet = null;
+					for (WorksheetEntry workSheetEntry : entry.getWorksheets()) {
+						if (Objects.equal(workSheetEntry.getTitle().getPlainText(), WORKSHEET_NAME)) {
+							workSheet = workSheetEntry;
+							break;
+						}
+					}
+
+					if (workSheet == null) {
+						handler.post(new Runnable() {
+
+							@Override
+							public void run() {
+								validText.setText(R.string.invalid_form);
+							}
+						});
+						return null;
+					}
+
+					Editor editor = settings.edit();
+					editor.putString(PREF_KEY_FILE_ID, formId);
+					editor.putString(PREF_KEY_FILE, formName);
+					editor.putString(PREF_KEY_FEED_URL, workSheet.getListFeedUrl().toString());
+					editor.commit();
+					asyncTaskWorkSheet = new AsyncTaskWorksheet(GdgFormActivity.this, spreadSheetService);
+					asyncTaskWorkSheet.setUrlFedd(workSheet.getListFeedUrl());
+					asyncTaskWorkSheet.execute();
+				} catch (Exception e) {
+					manageError("WorkSheet", e);
+				}
+				return null;
+			}
+
+		}.execute();
 
 	}
 
+	/**
+	 * @param accessToken
+	 * @return
+	 */
 	private HttpRequestInitializer getCredentialGoogle(final String accessToken) {
 		GoogleCredential credential = new GoogleCredential();
 		credential.setAccessToken(accessToken);
 		return credential;
 	}
 
+	/**
+	 * @param v
+	 */
 	public void clickEvent(View v) {
 		int id = v.getId();
 		switch (id) {
@@ -419,6 +522,58 @@ public class GdgFormActivity extends Activity implements //
 		}
 	}
 
+	// Méthode qui se déclenchera lorsque vous appuierez sur le bouton menu du téléphone
+	public boolean onCreateOptionsMenu(Menu menu) {
+
+		menu.addSubMenu(0, MENU_CLEAR, 0, R.string.clear_datas).setIcon(android.R.drawable.ic_menu_close_clear_cancel);
+		menu.addSubMenu(0, MENU_REFRESH, 0, R.string.refresh_datas).setIcon(android.R.drawable.ic_popup_sync);
+
+		return true;
+	}
+
+	// Méthode qui se déclenchera au clic sur un item
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// On regarde quel item a été cliqué grâce à son id et on déclenche une action
+		switch (item.getItemId()) {
+		case MENU_CLEAR: {
+			buttonCheck.setEnabled(false);
+			Editor editor = settings.edit();
+			editor.clear();
+			editor.commit();
+			accountName = null;
+			formId = null;
+			formName = null;
+			accountNameText.setText("");
+			fileText.setText("");
+			checkAccount();
+			return true;
+		}
+		case MENU_REFRESH: {
+			buttonCheck.setEnabled(false);
+			Editor editor = settings.edit();
+			editor.putStringSet(PREF_KEY_CODES, null);
+			editor.commit();
+			String urlFeed = settings.getString(PREF_KEY_FEED_URL, null);
+			if (urlFeed != null) {
+				try {
+					asyncTaskWorkSheet = new AsyncTaskWorksheet(this, spreadSheetService);
+					asyncTaskWorkSheet.setUrlFedd(new URL(urlFeed));
+					asyncTaskWorkSheet.execute();
+				} catch (MalformedURLException e) {
+					manageError("UrlFeed", e);
+				}
+			}
+			return true;
+		}
+		}
+		return false;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see android.app.Activity#onActivityResult(int, int, android.content.Intent)
+	 */
 	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
 		IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
 		if (scanResult != null) {
@@ -443,6 +598,7 @@ public class GdgFormActivity extends Activity implements //
 	@Override
 	public void driveListForm(FileList listFile) {
 		this.list = listFile;
+		discardWait();
 		handler.post(new Runnable() {
 
 			@Override
@@ -462,7 +618,7 @@ public class GdgFormActivity extends Activity implements //
 	 */
 	@Override
 	public void driveStartSearchFiles() {
-		// TODO load
+		waitMessage(R.string.search_drive_files);
 
 	}
 
@@ -473,8 +629,7 @@ public class GdgFormActivity extends Activity implements //
 	 */
 	@Override
 	public void driveError(Exception e) {
-		// TODO show error
-
+		manageError("Drive", e);
 	}
 
 	/*
@@ -489,6 +644,7 @@ public class GdgFormActivity extends Activity implements //
 	@Override
 	public void spreadsheetListForm(List<SpreadsheetEntry> listSpreadSheets) {
 		spreadsheets = listSpreadSheets;
+		discardWait();
 		handler.post(new Runnable() {
 
 			@Override
@@ -507,7 +663,7 @@ public class GdgFormActivity extends Activity implements //
 	 */
 	@Override
 	public void spreadsheetStartSearchFiles() {
-		// TODO load
+		waitMessage(R.string.search_spreadsheet_files);
 
 	}
 
@@ -518,8 +674,7 @@ public class GdgFormActivity extends Activity implements //
 	 */
 	@Override
 	public void spreadsheetError(Exception e) {
-		// TODO show error
-
+		manageError("SpreadSheet", e);
 	}
 
 	/*
@@ -534,17 +689,23 @@ public class GdgFormActivity extends Activity implements //
 	 */
 	@Override
 	public void worksheetListForm(ListFeed rows) {
+		discardWait();
+		Set<String> codes = new HashSet<String>();
 		// Iterate through each row, printing its cell values.
 		for (ListEntry row : rows.getEntries()) {
 			// Print the first column's cell value
-			Log.i(TAG, row.getTitle().getPlainText() + "\t");
 			// Iterate over the remaining columns, and print each cell value
 			for (String tag : row.getCustomElements().getTags()) {
-				Log.i(TAG, row.getCustomElements().getValue(tag) + "\t");
+				if (Objects.equal(TAG_CODE_COL, tag)) {
+					codes.add(row.getCustomElements().getValue(tag));
+				}
 			}
-			Log.i(TAG, "");
 		}
 
+		Editor editor = settings.edit();
+		editor.putStringSet(PREF_KEY_CODES, codes);
+		editor.commit();
+		datasLoad();
 	}
 
 	/*
@@ -554,8 +715,7 @@ public class GdgFormActivity extends Activity implements //
 	 */
 	@Override
 	public void worksheetStartSearchWorkSheet() {
-		// TODO load
-
+		waitMessage(R.string.search_worksheet);
 	}
 
 	/*
@@ -565,8 +725,74 @@ public class GdgFormActivity extends Activity implements //
 	 */
 	@Override
 	public void worksheetError(Exception e) {
-		// TODO show error
+		manageError("WorkSheet", e);
+	}
 
+	/**
+	 * Manage an error
+	 * 
+	 * @param origin
+	 * @param e
+	 */
+	private void manageError(final String origin, final Exception e) {
+		handler.post(new Runnable() {
+
+			@Override
+			public void run() {
+				loadText.setVisibility(View.INVISIBLE);
+				// progressBar.clearAnimation();
+				progressBar.setVisibility(View.INVISIBLE);
+				Log.e(TAG, origin, e);
+				validText.setText(e.getMessage());
+
+			}
+		});
+	}
+
+	/**
+	 * show a wait message
+	 * 
+	 * @param id
+	 */
+	private void waitMessage(final int id) {
+		handler.post(new Runnable() {
+
+			@Override
+			public void run() {
+				progressBar.setVisibility(View.VISIBLE);
+				loadText.setVisibility(View.VISIBLE);
+				loadText.setText(id);
+			}
+		});
+
+	}
+
+	/**
+	 * Hide the wait message
+	 */
+	private void discardWait() {
+		handler.post(new Runnable() {
+
+			@Override
+			public void run() {
+				progressBar.setVisibility(View.INVISIBLE);
+				loadText.setVisibility(View.INVISIBLE);
+
+			}
+		});
+	}
+
+	private void datasLoad() {
+		handler.post(new Runnable() {
+
+			@Override
+			public void run() {
+				loadText.setText(R.string.datas_load);
+				loadText.setVisibility(View.VISIBLE);
+
+				buttonCheck.setEnabled(true);
+			}
+		});
 	}
 
 }

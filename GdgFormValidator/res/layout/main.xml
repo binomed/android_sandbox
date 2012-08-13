@@ -21,7 +21,12 @@
                         android:layout_alignParentRight="true"
                         android:layout_marginLeft="5dp"
                         android:layout_marginRight="15dp"
-                        android:layout_toRightOf="@+id/lblAccount" />
+                        android:layout_toRightOf="@+id/lblAccount"
+                        android:ellipsize="end"
+                        android:singleLine="true"
+                        android:scrollHorizontally="true"
+                        android:ems="15" 
+                        />
 
                     <Button
                         android:id="@+id/button1"
@@ -32,9 +37,9 @@
                         android:layout_marginBottom="140dp"
                         android:onClick="clickEvent"
                         android:text="@string/checkCode" />
-
-                    <TextView
-                        android:id="@+id/lblFile"
+
+
+                    <TextView                        android:id="@+id/lblFile"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_below="@+id/accountName"
@@ -51,7 +56,11 @@
                         android:layout_alignParentRight="true"
                         android:layout_marginLeft="5dp"
                         android:layout_marginRight="15dp"
-                        android:layout_toRightOf="@+id/lblFile"  >
+                        android:ellipsize="end"
+                        android:singleLine="true"
+                        android:scrollHorizontally="true"
+                        android:layout_toRightOf="@+id/lblFile" 
+                        android:ems="15" >
 
                         <requestFocus />
                     </EditText>
@@ -75,7 +84,7 @@
                         android:layout_marginBottom="20dp"
                         android:layout_marginRight="19dp"
                         android:layout_toLeftOf="@+id/progressBar"
-                        android:textAppearance="?android:attr/textAppearanceLarge" />
+                        android:textAppearance="?android:attr/textAppearanceMedium" />
 
                     <TextView
                         android:id="@+id/validText"
@@ -85,5 +94,6 @@
                         android:layout_centerHorizontal="true"
                         android:layout_marginBottom="70dp"
                         android:textAppearance="?android:attr/textAppearanceLarge" />
+
 
                 </RelativeLayout>
