@@ -11,5 +11,8 @@
     <string name="refresh_datas">Refresh codes</string>
     <string name="datas_load">Datas load !</string>
     <string name="invalid_form">Invalid form (does not have "Codes worksheet")</string>
+    <string name="code_found">Code Found :) ! </string>
+    <string name="code_not_found">Code not Found :( !</string>
+    <string name="no_internet_connection">You Do not have Internet Connection</string>
     
 </resources>

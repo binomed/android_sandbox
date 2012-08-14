@@ -21,6 +21,7 @@ import android.content.SharedPreferences.Editor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,6 +30,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.binomed.gdg.form.asynctask.AsyncTaskDriveForm;
 import com.binomed.gdg.form.asynctask.AsyncTaskDriveForm.CallBackDriveForm;
@@ -36,6 +38,7 @@ import com.binomed.gdg.form.asynctask.AsyncTaskSpreadsheetForm;
 import com.binomed.gdg.form.asynctask.AsyncTaskSpreadsheetForm.CallBackSpreadsheetForm;
 import com.binomed.gdg.form.asynctask.AsyncTaskWorksheet;
 import com.binomed.gdg.form.asynctask.AsyncTaskWorksheet.CallBackWorksheetForm;
+import com.binomed.gdg.form.tools.DetectConnection;
 import com.binomed.gdg.form.tools.zxing.IntentIntegrator;
 import com.binomed.gdg.form.tools.zxing.IntentResult;
 import com.google.api.client.extensions.android2.AndroidHttp;
@@ -48,6 +51,7 @@ import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.FileList;
 import com.google.common.base.Objects;
+import com.google.common.collect.ImmutableSet;
 import com.google.gdata.client.spreadsheet.SpreadsheetService;
 import com.google.gdata.data.spreadsheet.ListEntry;
 import com.google.gdata.data.spreadsheet.ListFeed;
@@ -70,6 +74,18 @@ public class GdgFormActivity extends Activity implements //
 	 * Constantes
 	 */
 
+	/**
+	 * Action to check the form id
+	 */
+	private static final int ACTION_CHECK_FORM_ID = 1;
+	/**
+	 * Action to list the spreadsheet of user
+	 */
+	private static final int ACTION_LIST_SPREADSHEET = 2;
+	/**
+	 * Action to refresh the datas of worksheet
+	 */
+	private static final int ACTION_REFRESH_DATAS = 3;
 	/**
 	 * Constantes for selecting account
 	 */
@@ -285,7 +301,7 @@ public class GdgFormActivity extends Activity implements //
 			builder.setItems(names, new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int which) {
 					// Stuff to do when the account is selected by the user
-					gotAccount(accounts[which]);
+					gotAccount(accounts[which], true);
 				}
 
 			});
@@ -338,21 +354,32 @@ public class GdgFormActivity extends Activity implements //
 	 */
 	private void checkAccount() {
 
-		Account[] accounts = accountManager.getAccountsByType("com.google");
 		if (accountName == null) {
+			Account[] accounts = accountManager.getAccountsByType("com.google");
 			if (accounts.length > 1) {
 				showDialog(DIALOG_ACCOUNTS);
 			} else if (accounts.length == 1) {
-				gotAccount(accounts[0]);
+				gotAccount(accounts[0], true);
 			}
 		} else {
-			for (Account account : accounts) {
-				if (Objects.equal(account.name, this.accountName)) {
-					gotAccount(account);
-					break;
-				}
-			}
+			gotAccount(getAccountFromName(accountName), false);
 		}
+	}
+
+	/**
+	 * Verify the internet connectivity
+	 * 
+	 * @return
+	 */
+	private boolean checkConnectivity() {
+		if (DetectConnection.checkInternetConnection(this)) {
+			return true;
+		} else {
+			Toast.makeText(this, "You Do not have Internet Connection", Toast.LENGTH_LONG).show();
+			this.startActivity(new Intent(Settings.ACTION_WIRELESS_SETTINGS));
+			return false;
+		}
+
 	}
 
 	/**
@@ -370,16 +397,46 @@ public class GdgFormActivity extends Activity implements //
 	}
 
 	/**
+	 * @param name
+	 * @return
+	 */
+	private Account getAccountFromName(String name) {
+		Account[] accounts = accountManager.getAccountsByType("com.google");
+		for (Account account : accounts) {
+			if (Objects.equal(account.name, this.accountName)) {
+				return account;
+			}
+		}
+		return null;
+	}
+
+	/**
 	 * Called when an account has been selected
 	 * 
 	 * @param account
 	 */
-	private void gotAccount(final Account account) {
+	private void gotAccount(final Account account, boolean getToken) {
 		this.accountName = account.name;
 		this.accountNameText.setText(this.accountName);
 		Editor editor = settings.edit();
 		editor.putString(PREF_KEY_ACCOUNT, accountName);
 		editor.commit();
+		if (getToken) {
+			gotToken(account, ACTION_CHECK_FORM_ID);
+		} else {
+			checkFormId();
+		}
+	}
+
+	/**
+	 * Get the OAuth2 token of the account
+	 * 
+	 * @param account
+	 */
+	private void gotToken(final Account account, final int actionToLaunch) {
+		if (!checkConnectivity()) {
+			return;
+		}
 		waitMessage(R.string.get_token);
 		accountManager.getAuthToken(account, AUTH_TOKEN_TYPE, null, this, new AccountManagerCallback<Bundle>() {
 			public void run(AccountManagerFuture<Bundle> future) {
@@ -393,7 +450,20 @@ public class GdgFormActivity extends Activity implements //
 					GdgFormActivity.this.credential = getCredentialGoogle(token);
 
 					initServices();
-					checkFormId();
+					switch (actionToLaunch) {
+					case ACTION_CHECK_FORM_ID:
+						checkFormId();
+						break;
+					case ACTION_LIST_SPREADSHEET:
+						useSpreadsheetAPI();
+						break;
+					case ACTION_REFRESH_DATAS:
+						refreshDatas();
+						break;
+
+					default:
+						break;
+					}
 
 				} catch (OperationCanceledException e) {
 					// TODO: The user has denied you access to the API,
@@ -432,8 +502,12 @@ public class GdgFormActivity extends Activity implements //
 	 * 
 	 */
 	private void useSpreadsheetAPI() {
-		asyncTaskSpreadsheetForm = new AsyncTaskSpreadsheetForm(this, spreadSheetService);
-		asyncTaskSpreadsheetForm.execute();
+		if (this.token == null) {
+			gotToken(getAccountFromName(accountName), ACTION_LIST_SPREADSHEET);
+		} else {
+			asyncTaskSpreadsheetForm = new AsyncTaskSpreadsheetForm(this, spreadSheetService);
+			asyncTaskSpreadsheetForm.execute();
+		}
 	}
 
 	/**
@@ -549,24 +623,36 @@ public class GdgFormActivity extends Activity implements //
 			return true;
 		}
 		case MENU_REFRESH: {
-			buttonCheck.setEnabled(false);
-			Editor editor = settings.edit();
-			editor.putStringSet(PREF_KEY_CODES, null);
-			editor.commit();
-			String urlFeed = settings.getString(PREF_KEY_FEED_URL, null);
-			if (urlFeed != null) {
-				try {
-					asyncTaskWorkSheet = new AsyncTaskWorksheet(this, spreadSheetService);
-					asyncTaskWorkSheet.setUrlFedd(new URL(urlFeed));
-					asyncTaskWorkSheet.execute();
-				} catch (MalformedURLException e) {
-					manageError("UrlFeed", e);
-				}
+			if (token == null) {
+
+				gotToken(getAccountFromName(accountName), ACTION_REFRESH_DATAS);
+			} else {
+				buttonCheck.setEnabled(false);
+				Editor editor = settings.edit();
+				editor.putStringSet(PREF_KEY_CODES, null);
+				editor.commit();
+				refreshDatas();
 			}
 			return true;
 		}
 		}
 		return false;
+	}
+
+	/**
+	 * Refresh the datas
+	 */
+	private void refreshDatas() {
+		String urlFeed = settings.getString(PREF_KEY_FEED_URL, null);
+		if (urlFeed != null) {
+			try {
+				asyncTaskWorkSheet = new AsyncTaskWorksheet(this, spreadSheetService);
+				asyncTaskWorkSheet.setUrlFedd(new URL(urlFeed));
+				asyncTaskWorkSheet.execute();
+			} catch (MalformedURLException e) {
+				manageError("UrlFeed", e);
+			}
+		}
 	}
 
 	/*
@@ -577,7 +663,17 @@ public class GdgFormActivity extends Activity implements //
 	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
 		IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
 		if (scanResult != null) {
-			// TODO handle scan result
+			try {
+				Integer.valueOf(scanResult.getContents());
+				Set<String> codeList = settings.getStringSet(PREF_KEY_CODES, ImmutableSet.<String> of());
+
+				validateCode(!codeList.isEmpty() && codeList.contains(scanResult.getContents()) ? //
+				R.string.code_found
+						: //
+						R.string.code_not_found);
+			} catch (NumberFormatException e) {
+				manageError("Result Code", e);
+			}
 		}
 		// else continue with any other code you need in the method
 	}
@@ -728,6 +824,11 @@ public class GdgFormActivity extends Activity implements //
 		manageError("WorkSheet", e);
 	}
 
+	/*
+	 * 
+	 * UI methods
+	 */
+
 	/**
 	 * Manage an error
 	 * 
@@ -782,6 +883,9 @@ public class GdgFormActivity extends Activity implements //
 		});
 	}
 
+	/**
+	 * Show a message when datas are load
+	 */
 	private void datasLoad() {
 		handler.post(new Runnable() {
 
@@ -791,6 +895,19 @@ public class GdgFormActivity extends Activity implements //
 				loadText.setVisibility(View.VISIBLE);
 
 				buttonCheck.setEnabled(true);
+			}
+		});
+	}
+
+	/**
+	 * Show a the message of validate code
+	 */
+	private void validateCode(final int string) {
+		handler.post(new Runnable() {
+
+			@Override
+			public void run() {
+				validText.setText(string);
 			}
 		});
 	}
