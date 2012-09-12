@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">MapFragment</string>
+    <string name="withViewPager">With ViewPager</string>
+    <string name="withWeb">With WebView (default is map view)</string>
+</resources>

@@ -1,3 +1,17 @@
+/*
+ * Copyright (C) 2012 Binomed (http://bloimport java.net.URL;
+
+import android.os.AsyncTask;
+import android.util.Log;
+
+import com.google.gdata.client.spreadsheet.SpreadsheetService;
+import com.google.gdata.data.spreadsheet.ListFeed;
+http://www.eclipse.org/legal/epl-v10.html
+ *
+ * THE ACCOMPANYING PROGRAM IS PROVIDED UNDER THE TERMS OF THIS ECLIPSE PUBLIC 
+ * LICENSE ("AGREEMENT"). ANY USE, REPRODUCTION OR DISTRIBUTION OF THE PROGRAM 
+ * CONSTITUTES RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT.
+ */
 package com.binomed.gdg.form.asynctask;
 
 import java.net.URL;
@@ -8,6 +22,10 @@ import android.util.Log;
 import com.google.gdata.client.spreadsheet.SpreadsheetService;
 import com.google.gdata.data.spreadsheet.ListFeed;
 
+/**
+ * @author JefBinomed
+ * 
+ */
 public class AsyncTaskWorksheet extends AsyncTask<Void, Void, ListFeed> {
 
 	private static final String TAG = "AsyncTaskWorksheet";

@@ -19,15 +19,23 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
 /**
- * @author Jef
- * BaseAdapter for the ListView
- *
+ * @author Jef BaseAdapter for the ListView
+ * 
  */
 public class CustomAdapter extends BaseAdapter {
 
 	private final Context context;
 
+	private static final int limit = 100;
 	private static final String HELLO = "Hello ";
+	private static final String[] STRING_ARRAY = new String[limit];
+	static {
+
+		for (int i = 0; i < limit; i++) {
+			STRING_ARRAY[i] = HELLO + i;
+		}
+
+	}
 
 	/**
 	 * @param context
@@ -37,15 +45,19 @@ public class CustomAdapter extends BaseAdapter {
 		this.context = context;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.widget.Adapter#getCount()
 	 */
 	@Override
 	public int getCount() {
-		return 100;
+		return limit;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.widget.Adapter#getItem(int)
 	 */
 	@Override
@@ -53,7 +65,9 @@ public class CustomAdapter extends BaseAdapter {
 		return arg0;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.widget.Adapter#getItemId(int)
 	 */
 	@Override
@@ -61,7 +75,9 @@ public class CustomAdapter extends BaseAdapter {
 		return arg0;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.widget.Adapter#getView(int, android.view.View, android.view.ViewGroup)
 	 */
 	@Override
@@ -70,9 +86,10 @@ public class CustomAdapter extends BaseAdapter {
 		if (arg1 != null) {
 			view = (CustomView) arg1;
 		} else {
-			view = new CustomView(context,0);
+			view = new CustomView(context, 0);
 		}
-		view.changeText(HELLO + arg0, arg0);
+		// view.changeText(HELLO + arg0, arg0);
+		view.changeText(STRING_ARRAY[arg0], arg0);
 		return view;
 	}
 }

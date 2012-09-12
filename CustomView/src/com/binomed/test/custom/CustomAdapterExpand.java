@@ -6,9 +6,8 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 
 /**
- * @author Jef
- * BaseExpandableListAdapter for the ExpandList
- *
+ * @author Jef BaseExpandableListAdapter for the ExpandList
+ * 
  */
 public class CustomAdapterExpand extends BaseExpandableListAdapter {
 
@@ -16,6 +15,22 @@ public class CustomAdapterExpand extends BaseExpandableListAdapter {
 
 	private static final String HELLO = "Hello Expand ";
 	private static final String HELLO_CHILD = "Hello Child ";
+
+	private static final int limit = 100;
+	private static final int limitChild = 20;
+	private static final String[] STRING_ARRAY = new String[limit];
+	private static final String[] STRING_CHILD_ARRAY = new String[limit + limitChild];
+
+	static {
+
+		for (int i = 0; i < limit; i++) {
+			STRING_ARRAY[i] = HELLO + i;
+		}
+		for (int i = 0; i < limit + limitChild; i++) {
+			STRING_CHILD_ARRAY[i] = HELLO_CHILD + i;
+		}
+
+	}
 
 	/**
 	 * @param context
@@ -25,7 +40,9 @@ public class CustomAdapterExpand extends BaseExpandableListAdapter {
 		this.context = context;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.widget.ExpandableListAdapter#getChild(int, int)
 	 */
 	@Override
@@ -33,7 +50,9 @@ public class CustomAdapterExpand extends BaseExpandableListAdapter {
 		return arg0;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.widget.ExpandableListAdapter#getChildId(int, int)
 	 */
 	@Override
@@ -41,7 +60,9 @@ public class CustomAdapterExpand extends BaseExpandableListAdapter {
 		return childPosition;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.widget.ExpandableListAdapter#getChildView(int, int, boolean, android.view.View, android.view.ViewGroup)
 	 */
 	@Override
@@ -52,19 +73,23 @@ public class CustomAdapterExpand extends BaseExpandableListAdapter {
 		} else {
 			view = new CustomView(context, 20);
 		}
-		view.changeText(HELLO_CHILD + (groupPosition + childPosition), groupPosition);
+		view.changeText(STRING_CHILD_ARRAY[groupPosition + childPosition], groupPosition);
 		return view;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.widget.ExpandableListAdapter#getChildrenCount(int)
 	 */
 	@Override
 	public int getChildrenCount(int groupPosition) {
-		return 20;
+		return limitChild;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.widget.ExpandableListAdapter#getGroup(int)
 	 */
 	@Override
@@ -72,15 +97,19 @@ public class CustomAdapterExpand extends BaseExpandableListAdapter {
 		return groupPosition;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.widget.ExpandableListAdapter#getGroupCount()
 	 */
 	@Override
 	public int getGroupCount() {
-		return 100;
+		return limit;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.widget.ExpandableListAdapter#getGroupId(int)
 	 */
 	@Override
@@ -88,7 +117,9 @@ public class CustomAdapterExpand extends BaseExpandableListAdapter {
 		return groupPosition;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.widget.ExpandableListAdapter#getGroupView(int, boolean, android.view.View, android.view.ViewGroup)
 	 */
 	@Override
@@ -97,13 +128,15 @@ public class CustomAdapterExpand extends BaseExpandableListAdapter {
 		if (convertView != null) {
 			view = (CustomView) convertView;
 		} else {
-			view = new CustomView(context,0);
+			view = new CustomView(context, 0);
 		}
-		view.changeText(HELLO + groupPosition, groupPosition);
+		view.changeText(STRING_ARRAY[groupPosition], groupPosition);
 		return view;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.widget.ExpandableListAdapter#hasStableIds()
 	 */
 	@Override
@@ -111,7 +144,9 @@ public class CustomAdapterExpand extends BaseExpandableListAdapter {
 		return false;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.widget.ExpandableListAdapter#isChildSelectable(int, int)
 	 */
 	@Override
