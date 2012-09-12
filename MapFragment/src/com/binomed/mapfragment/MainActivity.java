@@ -2,7 +2,6 @@ package com.binomed.mapfragment;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
@@ -10,12 +9,14 @@ import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.widget.CheckBox;
 
-public class MainActivity extends FragmentActivity {
+import com.actionbarsherlock.app.SherlockFragmentActivity;
+
+public class MainActivity extends SherlockFragmentActivity {// FragmentActivity {
 
 	private CheckBox checkWeb;
 	private ViewPager viewPager;
 	private Fragment webFragment, mapFragment;
-	private FragmentPagerAdapter adapterWeb, adapterMap;
+	private FragmentPagerAdapter adapterWeb, adapterMap, adapterCustom;
 
 	private static final String TAG_MAP = MainActivity.class.getName() + "mapTag";
 	private static final String TAG_WEB = MainActivity.class.getName() + "webTag";
@@ -35,6 +36,7 @@ public class MainActivity extends FragmentActivity {
 
 		adapterMap = new MapFragmentPagerAdapter(getSupportFragmentManager());
 		adapterWeb = new WebFragmentPagerAdapter(getSupportFragmentManager());
+		adapterCustom = new CustomFragmentPagerAdapter(getSupportFragmentManager());
 
 		changeAdapter(checkWeb.isChecked());
 
@@ -77,9 +79,40 @@ public class MainActivity extends FragmentActivity {
 
 		transaction.commit();
 
-		viewPager.setAdapter(web ? adapterWeb : adapterMap);
+		((CustomFragmentPagerAdapter) adapterCustom).setWeb(web);
+		// viewPager.setAdapter(web ? adapterWeb : adapterMap);
+		viewPager.setAdapter(adapterCustom);
 		viewPager.getAdapter().notifyDataSetChanged();
 	}
+
+	class CustomFragmentPagerAdapter extends FragmentPagerAdapter {
+
+		private boolean web;
+
+		public CustomFragmentPagerAdapter(FragmentManager fm) {
+			super(fm);
+		}
+
+		public void setWeb(boolean web) {
+			this.web = web;
+		}
+
+		@Override
+		public int getCount() {
+			return 2;
+		}
+
+		@Override
+		public int getItemPosition(Object object) {
+			return POSITION_NONE;
+		}
+
+		@Override
+		public Fragment getItem(int arg0) {
+			// return this.web ? new WebFragment() : new MapFragment();
+			return arg0 == 0 ? new WebFragment() : new MapFragment();
+		}
+	};
 
 	class WebFragmentPagerAdapter extends FragmentPagerAdapter {
 

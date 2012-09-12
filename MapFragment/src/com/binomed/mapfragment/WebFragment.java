@@ -1,14 +1,15 @@
 package com.binomed.mapfragment;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-public class WebFragment extends Fragment {
+import com.actionbarsherlock.app.SherlockFragment;
+
+public class WebFragment extends SherlockFragment {// Fragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
